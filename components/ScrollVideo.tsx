@@ -193,15 +193,22 @@ export default function ScrollVideo({
                     }}
                   >
                     <h1 
-                      className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-foreground mb-4 tracking-tight leading-none"
-                      style={{ textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}
+                      className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-foreground mb-4 tracking-tight leading-none uppercase"
+                      style={{ 
+                        textShadow: '0 2px 20px rgba(0,0,0,0.5)',
+                        fontFamily: 'var(--font-title)',
+                        letterSpacing: '-0.02em'
+                      }}
                     >
                       {overlay.text}
                     </h1>
                     {overlay.subtext && (
                       <p 
-                        className="text-xl sm:text-2xl md:text-3xl text-foreground/90 font-light"
-                        style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}
+                        className="text-xl sm:text-2xl md:text-3xl text-foreground/90 font-light tracking-wide"
+                        style={{ 
+                          textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                          fontFamily: 'var(--font-body)'
+                        }}
                       >
                         {overlay.subtext}
                       </p>
