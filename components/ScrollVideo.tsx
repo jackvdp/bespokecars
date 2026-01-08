@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 
-interface TextOverlay {
+export interface TextOverlay {
   text: string
   subtext?: string
   startProgress: number
@@ -13,45 +13,16 @@ interface ScrollVideoProps {
   src: string
   textOverlays?: TextOverlay[]
   scrollHeight?: string
+  showScrollIndicator?: boolean
+  overlayGradient?: boolean
 }
-
-const defaultTextOverlays: TextOverlay[] = [
-  {
-    text: "Trusted by Thousands",
-    subtext: "10,000+ successful events across the UK",
-    startProgress: 0,
-    endProgress: 0.25
-  },
-  {
-    text: "15+ Years of Excellence",
-    subtext: "Creating unforgettable experiences since day one",
-    startProgress: 0.2,
-    endProgress: 0.45
-  },
-  {
-    text: "Hand-Selected Fleet",
-    subtext: "Every vehicle curated for quality, performance & style",
-    startProgress: 0.4,
-    endProgress: 0.65
-  },
-  {
-    text: "Complete Peace of Mind",
-    subtext: "Full insurance • 24/7 support • Professional delivery",
-    startProgress: 0.6,
-    endProgress: 0.85
-  },
-  {
-    text: "Your Vision, Perfected",
-    subtext: "Weddings • Film • Corporate • Private hire",
-    startProgress: 0.8,
-    endProgress: 1
-  }
-]
 
 export default function ScrollVideo({ 
   src, 
-  textOverlays = defaultTextOverlays,
-  scrollHeight = "300vh"
+  textOverlays = [],
+  scrollHeight = "300vh",
+  showScrollIndicator = true,
+  overlayGradient = true
 }: ScrollVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -174,7 +145,7 @@ export default function ScrollVideo({
         )}
         
         {/* Text Overlays */}
-        {isLoaded && (
+        {isLoaded && textOverlays.length > 0 && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-8 max-w-6xl">
               {textOverlays.map((overlay, index) => {
@@ -210,9 +181,8 @@ export default function ScrollVideo({
           </div>
         )}
         
-
         {/* Scroll indicator */}
-        {isLoaded && scrollProgress < 0.05 && (
+        {showScrollIndicator && isLoaded && scrollProgress < 0.05 && (
           <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-foreground text-center animate-bounce">
             <svg 
               className="w-6 h-6 mx-auto opacity-60"
@@ -231,7 +201,9 @@ export default function ScrollVideo({
         )}
         
         {/* Overlay gradient for better text visibility */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-background/20 to-background/40 pointer-events-none" />
+        {overlayGradient && (
+          <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-background/20 to-background/40 pointer-events-none" />
+        )}
       </div>
     </div>
   )
