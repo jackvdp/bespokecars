@@ -1,4 +1,5 @@
 import ScrollVideo, { TextOverlay } from "@/components/ScrollVideo";
+import Navbar from "@/components/Navbar";
 
 const heroOverlays: TextOverlay[] = [
   {
@@ -36,6 +37,7 @@ const heroOverlays: TextOverlay[] = [
 export default function Home() {
   return (
     <main>
+      <Navbar />
       <ScrollVideo 
         src="/videos/cars.mp4" 
         textOverlays={heroOverlays}
