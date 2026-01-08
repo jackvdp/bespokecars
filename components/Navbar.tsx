@@ -43,8 +43,8 @@ export default function Navbar() {
           style={{
             maxWidth: '1280px',
             margin: '0 auto',
-            borderRadius: '16px',
-            padding: '12px 24px',
+            borderRadius: '9999px',
+            padding: '12px 28px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -73,13 +73,13 @@ export default function Navbar() {
             <motion.span 
               style={{
                 color: 'var(--foreground)',
-                fontWeight: 700,
-                fontSize: '18px',
+                fontWeight: 500,
+                fontSize: '14px',
                 fontFamily: 'var(--font-title)',
-                letterSpacing: '-0.02em',
+                letterSpacing: '0.1em',
               }}
               whileHover={{ 
-                textShadow: '0 0 30px var(--neon-blue-glow)',
+                textShadow: '0 0 20px rgba(255, 255, 255, 0.5)',
               }}
               transition={{ duration: 0.3 }}
             >
