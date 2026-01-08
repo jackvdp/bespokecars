@@ -17,32 +17,32 @@ interface ScrollVideoProps {
 
 const defaultTextOverlays: TextOverlay[] = [
   {
-    text: "50+ Luxury Vehicles",
-    subtext: "The largest premium fleet in the region",
+    text: "Trusted by Thousands",
+    subtext: "10,000+ successful events across the UK",
     startProgress: 0,
     endProgress: 0.25
   },
   {
-    text: "From Classic to Contemporary",
-    subtext: "Vintage Rolls-Royce to modern Lamborghini",
+    text: "15+ Years of Excellence",
+    subtext: "Creating unforgettable experiences since day one",
     startProgress: 0.2,
     endProgress: 0.45
   },
   {
-    text: "Every Occasion Covered",
-    subtext: "Weddings • Films • Events • Experiences",
+    text: "Hand-Selected Fleet",
+    subtext: "Every vehicle curated for quality, performance & style",
     startProgress: 0.4,
     endProgress: 0.65
   },
   {
-    text: "24/7 Concierge Service",
-    subtext: "Your perfect car, delivered anywhere",
+    text: "Complete Peace of Mind",
+    subtext: "Full insurance • 24/7 support • Professional delivery",
     startProgress: 0.6,
     endProgress: 0.85
   },
   {
-    text: "Arrive in Style",
-    subtext: "Book your dream car today",
+    text: "Your Vision, Perfected",
+    subtext: "Weddings • Film • Corporate • Private hire",
     startProgress: 0.8,
     endProgress: 1
   }
@@ -210,16 +210,7 @@ export default function ScrollVideo({
           </div>
         )}
         
-        {/* Progress bar */}
-        {isLoaded && (
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-foreground/10">
-            <div 
-              className="h-full bg-primary transition-all duration-100 ease-out"
-              style={{ width: `${scrollProgress * 100}%` }}
-            />
-          </div>
-        )}
-        
+
         {/* Scroll indicator */}
         {isLoaded && scrollProgress < 0.05 && (
           <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-foreground text-center animate-bounce">
