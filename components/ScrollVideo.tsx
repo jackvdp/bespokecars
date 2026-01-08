@@ -153,16 +153,42 @@ export default function ScrollVideo({
             <div className="text-center px-8 max-w-6xl">
               {textOverlays.map((overlay, index) => {
                 const opacity = getTextOpacity(overlay.startProgress, overlay.endProgress, index)
-                // First text only fades out (no translate), others fade in from below then fade out in place
-                const shouldTranslateIn = index > 0 && scrollProgress < overlay.startProgress + 0.05
-                const translateY = shouldTranslateIn ? (1 - opacity) * 20 : 0
+                const isEntering = scrollProgress < overlay.startProgress + 0.05
+                const isExiting = scrollProgress > overlay.endProgress - 0.05
+                
+                // First text only fades/scales out, others have full entrance animation
+                let translateY = 0
+                let scale = 1
+                let blur = 0
+                
+                if (index === 0) {
+                  // First text: scale up and blur out as it exits
+                  if (isExiting) {
+                    const exitProgress = (scrollProgress - (overlay.endProgress - 0.05)) / 0.05
+                    scale = 1 + (exitProgress * 0.1)
+                    blur = exitProgress * 8
+                  }
+                } else {
+                  // Other texts: slide up and scale in, then scale up and blur out
+                  if (isEntering) {
+                    const enterProgress = opacity
+                    translateY = (1 - enterProgress) * 60
+                    scale = 0.9 + (enterProgress * 0.1)
+                    blur = (1 - enterProgress) * 4
+                  } else if (isExiting) {
+                    const exitProgress = (scrollProgress - (overlay.endProgress - 0.05)) / 0.05
+                    scale = 1 + (exitProgress * 0.1)
+                    blur = exitProgress * 8
+                  }
+                }
                 return (
                   <div
                     key={index}
                     className="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300"
                     style={{ 
                       opacity,
-                      transform: `translateY(${translateY}px)`,
+                      transform: `translateY(${translateY}px) scale(${scale})`,
+                      filter: `blur(${blur}px)`,
                       pointerEvents: opacity > 0 ? 'auto' : 'none'
                     }}
                   >
