@@ -70,43 +70,21 @@ export default function Navbar() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <motion.div
+            <motion.span 
               style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '8px',
-                backgroundColor: 'var(--primary)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                color: 'var(--foreground)',
+                fontWeight: 700,
+                fontSize: '18px',
+                fontFamily: 'var(--font-title)',
+                letterSpacing: '-0.02em',
               }}
               whileHover={{ 
-                boxShadow: '0 0 30px var(--neon-blue-glow)',
+                textShadow: '0 0 30px var(--neon-blue-glow)',
               }}
               transition={{ duration: 0.3 }}
             >
-              <span 
-                style={{
-                  color: 'var(--background)',
-                  fontWeight: 700,
-                  fontSize: '18px',
-                  fontFamily: 'var(--font-title)',
-                }}
-              >
-                BC
-              </span>
-            </motion.div>
-            <span 
-              style={{
-                color: 'var(--foreground)',
-                fontWeight: 600,
-                fontSize: '20px',
-                fontFamily: 'var(--font-title)',
-              }}
-              className="hidden sm:block"
-            >
               BESPOKE CARS
-            </span>
+            </motion.span>
           </motion.a>
 
           {/* Desktop Navigation */}
