@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export interface TextOverlay {
   text: string
@@ -99,25 +100,23 @@ export default function ScrollVideo({
     }
   }, [isLoaded, updateVideoFrame])
 
-  const getTextOpacity = (startProgress: number, endProgress: number, index: number) => {
-    // First overlay starts at full opacity
-    if (index === 0 && scrollProgress <= startProgress) return 1
-    
-    if (scrollProgress < startProgress) return 0
-    if (scrollProgress > endProgress) return 0
-    
-    const fadeInEnd = startProgress + 0.05
-    const fadeOutStart = endProgress - 0.05
-    
-    if (scrollProgress <= fadeInEnd) {
-      return (scrollProgress - startProgress) / 0.05
+  const getActiveOverlayIndex = () => {
+    // Find which overlay should be active based on scroll progress
+    for (let i = textOverlays.length - 1; i >= 0; i--) {
+      const overlay = textOverlays[i]
+      if (i === 0) {
+        // First overlay is active from 0 until its end
+        if (scrollProgress <= overlay.endProgress) return 0
+      } else {
+        // Other overlays become active at their midpoint between start and previous end
+        const midPoint = (overlay.startProgress + textOverlays[i - 1].endProgress) / 2
+        if (scrollProgress >= midPoint && scrollProgress <= overlay.endProgress) return i
+      }
     }
-    if (scrollProgress >= fadeOutStart) {
-      return (endProgress - scrollProgress) / 0.05
-    }
-    
-    return 1
+    return textOverlays.length - 1
   }
+
+  const activeIndex = getActiveOverlayIndex()
 
   return (
     <div 
@@ -138,106 +137,122 @@ export default function ScrollVideo({
         </video>
         
         {/* Loading indicator */}
-        {!isLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background">
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 border-4 border-foreground/30 border-t-primary rounded-full animate-spin"></div>
-              <div className="text-foreground">Loading video...</div>
-            </div>
-          </div>
-        )}
+        <AnimatePresence>
+          {!isLoaded && (
+            <motion.div 
+              className="absolute inset-0 flex items-center justify-center bg-background"
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="flex flex-col items-center gap-4">
+                <motion.div 
+                  className="w-12 h-12 border-4 border-foreground/30 border-t-primary rounded-full"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                />
+                <div className="text-foreground">Loading video...</div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         {/* Text Overlays */}
         {isLoaded && textOverlays.length > 0 && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center px-8 max-w-6xl">
-              {textOverlays.map((overlay, index) => {
-                const opacity = getTextOpacity(overlay.startProgress, overlay.endProgress, index)
-                const isEntering = scrollProgress < overlay.startProgress + 0.05
-                const isExiting = scrollProgress > overlay.endProgress - 0.05
-                
-                // First text only fades/scales out, others have full entrance animation
-                let translateY = 0
-                let scale = 1
-                let blur = 0
-                
-                if (index === 0) {
-                  // First text: scale up and blur out as it exits
-                  if (isExiting) {
-                    const exitProgress = (scrollProgress - (overlay.endProgress - 0.05)) / 0.05
-                    scale = 1 + (exitProgress * 0.1)
-                    blur = exitProgress * 8
-                  }
-                } else {
-                  // Other texts: slide up and scale in, then scale up and blur out
-                  if (isEntering) {
-                    const enterProgress = opacity
-                    translateY = (1 - enterProgress) * 60
-                    scale = 0.9 + (enterProgress * 0.1)
-                    blur = (1 - enterProgress) * 4
-                  } else if (isExiting) {
-                    const exitProgress = (scrollProgress - (overlay.endProgress - 0.05)) / 0.05
-                    scale = 1 + (exitProgress * 0.1)
-                    blur = exitProgress * 8
-                  }
-                }
-                return (
-                  <div
-                    key={index}
-                    className="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300"
-                    style={{ 
-                      opacity,
-                      transform: `translateY(${translateY}px) scale(${scale})`,
-                      filter: `blur(${blur}px)`,
-                      pointerEvents: opacity > 0 ? 'auto' : 'none'
-                    }}
-                  >
-                    <h1 
-                      className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-foreground mb-4 tracking-tight leading-none uppercase"
-                      style={{ 
-                        textShadow: '0 2px 20px rgba(0,0,0,0.5)',
-                        fontFamily: 'var(--font-title)',
-                        letterSpacing: '-0.02em'
+            <div className="text-center px-8 max-w-6xl relative">
+              <AnimatePresence mode="wait">
+                {textOverlays.map((overlay, index) => {
+                  if (index !== activeIndex) return null
+                  
+                  return (
+                    <motion.div
+                      key={index}
+                      className="flex flex-col items-center justify-center"
+                      initial={index === 0 ? { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" } : { opacity: 0, y: 60, scale: 0.9, filter: "blur(8px)" }}
+                      animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                      exit={{ opacity: 0, scale: 1.1, filter: "blur(12px)" }}
+                      transition={{ 
+                        duration: 0.6,
+                        ease: [0.22, 1, 0.36, 1]
                       }}
                     >
-                      {overlay.text}
-                    </h1>
-                    {overlay.subtext && (
-                      <p 
-                        className="text-xl sm:text-2xl md:text-3xl text-foreground/90 font-light tracking-wide"
+                      <motion.h1 
+                        className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-foreground mb-4 tracking-tight leading-none uppercase"
                         style={{ 
-                          textShadow: '0 2px 10px rgba(0,0,0,0.5)',
-                          fontFamily: 'var(--font-body)'
+                          textShadow: '0 4px 30px rgba(0,0,0,0.7)',
+                          fontFamily: 'var(--font-title)',
+                          letterSpacing: '-0.02em'
                         }}
+                        initial={index === 0 ? {} : { opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
                       >
-                        {overlay.subtext}
-                      </p>
-                    )}
-                  </div>
-                )
-              })}
+                        {overlay.text.split('').map((char, charIndex) => (
+                          <motion.span
+                            key={charIndex}
+                            initial={index === 0 ? {} : { opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ 
+                              duration: 0.4,
+                              delay: index === 0 ? 0 : 0.02 * charIndex,
+                              ease: [0.22, 1, 0.36, 1]
+                            }}
+                          >
+                            {char}
+                          </motion.span>
+                        ))}
+                      </motion.h1>
+                      {overlay.subtext && (
+                        <motion.p 
+                          className="text-xl sm:text-2xl md:text-3xl text-foreground/90 font-light tracking-wide"
+                          style={{ 
+                            textShadow: '0 2px 20px rgba(0,0,0,0.6)',
+                            fontFamily: 'var(--font-body)'
+                          }}
+                          initial={index === 0 ? {} : { opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5, delay: index === 0 ? 0 : 0.3 }}
+                        >
+                          {overlay.subtext}
+                        </motion.p>
+                      )}
+                    </motion.div>
+                  )
+                })}
+              </AnimatePresence>
             </div>
           </div>
         )}
         
         {/* Scroll indicator */}
-        {showScrollIndicator && isLoaded && scrollProgress < 0.05 && (
-          <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-foreground text-center animate-bounce">
-            <svg 
-              className="w-6 h-6 mx-auto opacity-60"
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
+        <AnimatePresence>
+          {showScrollIndicator && isLoaded && scrollProgress < 0.05 && (
+            <motion.div 
+              className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-foreground text-center"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.3 }}
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M19 14l-7 7m0 0l-7-7m7 7V3"
-              />
-            </svg>
-          </div>
-        )}
+              <motion.svg 
+                className="w-6 h-6 mx-auto opacity-60"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                />
+              </motion.svg>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         {/* Overlay gradient for better text visibility */}
         {overlayGradient && (
