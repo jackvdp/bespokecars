@@ -99,7 +99,10 @@ export default function ScrollVideo({
     }
   }, [isLoaded, updateVideoFrame])
 
-  const getTextOpacity = (startProgress: number, endProgress: number) => {
+  const getTextOpacity = (startProgress: number, endProgress: number, index: number) => {
+    // First overlay starts at full opacity
+    if (index === 0 && scrollProgress <= startProgress) return 1
+    
     if (scrollProgress < startProgress) return 0
     if (scrollProgress > endProgress) return 0
     
@@ -149,14 +152,17 @@ export default function ScrollVideo({
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-8 max-w-6xl">
               {textOverlays.map((overlay, index) => {
-                const opacity = getTextOpacity(overlay.startProgress, overlay.endProgress)
+                const opacity = getTextOpacity(overlay.startProgress, overlay.endProgress, index)
+                // First text only fades out (no translate), others fade in from below then fade out in place
+                const shouldTranslateIn = index > 0 && scrollProgress < overlay.startProgress + 0.05
+                const translateY = shouldTranslateIn ? (1 - opacity) * 20 : 0
                 return (
                   <div
                     key={index}
                     className="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300"
                     style={{ 
                       opacity,
-                      transform: `translateY(${(1 - opacity) * 20}px)`,
+                      transform: `translateY(${translateY}px)`,
                       pointerEvents: opacity > 0 ? 'auto' : 'none'
                     }}
                   >
