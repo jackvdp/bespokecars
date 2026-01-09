@@ -35,19 +35,19 @@ const heroOverlays: TextOverlay[] = [
 const serviceOverlays: ServiceOverlayData[] = [
   {
     label: "Our Services",
-    heading: "Wedding Car Hire",
+    heading: "Weddings & Special Occasions",
     services: [
       {
-        title: "Bridal Arrivals",
-        description: "Make a grand entrance on your special day with our stunning collection"
+        title: "Wedding Car Hire",
+        description: "Stunning arrivals with decorated vehicles and professional chauffeurs"
       },
       {
-        title: "Decorated Vehicles",
-        description: "Ribbons, flowers and styling to perfectly match your wedding theme"
+        title: "Prom & Celebrations",
+        description: "Make memories with head-turning arrivals at proms and parties"
       },
       {
-        title: "Professional Chauffeurs",
-        description: "Immaculately presented, experienced drivers for seamless service"
+        title: "Film & Photoshoots",
+        description: "Camera-ready vehicles with flexible scheduling and UK-wide support"
       },
     ],
     startProgress: 0,
@@ -55,19 +55,19 @@ const serviceOverlays: ServiceOverlayData[] = [
   },
   {
     label: "Our Services",
-    heading: "Film & Photoshoot Hire",
+    heading: "Corporate & Executive",
     services: [
       {
-        title: "Production Ready",
-        description: "Vehicles prepped and polished for camera-ready appearances"
+        title: "Corporate Events",
+        description: "Impress clients with premium vehicle displays and executive transport"
       },
       {
-        title: "Diverse Fleet",
-        description: "From vintage classics to modern supercars for any creative vision"
+        title: "Chauffeur Services",
+        description: "Professional drivers for business travel and VIP transportation"
       },
       {
-        title: "Location Flexible",
-        description: "Delivery and support anywhere in the UK for your shoot"
+        title: "Close Protection",
+        description: "Discreet, secure transportation with trained security-cleared drivers"
       },
     ],
     startProgress: 0.32,
@@ -75,19 +75,19 @@ const serviceOverlays: ServiceOverlayData[] = [
   },
   {
     label: "Our Services",
-    heading: "Corporate & Events",
+    heading: "Bespoke Solutions",
     services: [
       {
-        title: "Executive Transport",
-        description: "Impress clients and guests with premium vehicle arrivals"
+        title: "Custom Packages",
+        description: "Tailored solutions designed around your specific requirements"
       },
       {
-        title: "Event Displays",
-        description: "Showcase stunning vehicles as centrepieces at your venue"
+        title: "Vehicle Leasing",
+        description: "Flexible leasing options to drive your dream car on your terms"
       },
       {
-        title: "Custom Branding",
-        description: "Decals and wraps available for marketing campaigns"
+        title: "Nationwide Delivery",
+        description: "Professional delivery and collection anywhere in the UK"
       },
     ],
     startProgress: 0.62,
