@@ -6,7 +6,6 @@ import SectionBackground from './SectionBackground'
 export interface ServiceItem {
   title: string
   description: string
-  icon?: string
 }
 
 export interface ServiceOverlayData {
@@ -147,11 +146,6 @@ export default function ServiceOverlay({ data, activeIndex }: ServiceOverlayProp
                     border: '1px solid rgba(255, 255, 255, 0.06)',
                   }}
                 >
-                  {service.icon && (
-                    <span style={{ fontSize: '28px', marginBottom: '12px', display: 'block' }}>
-                      {service.icon}
-                    </span>
-                  )}
                   <h3
                     style={{
                       color: 'var(--foreground)',

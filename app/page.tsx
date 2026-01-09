@@ -44,24 +44,16 @@ const serviceOverlays: ServiceOverlayData[] = [
     heading: "Wedding Car Hire",
     services: [
       {
-        icon: "💒",
         title: "Bridal Arrivals",
-        description: "Make a grand entrance on your special day"
+        description: "Make a grand entrance on your special day with our stunning collection"
       },
       {
-        icon: "📸",
-        title: "Photo Opportunities",
-        description: "Stunning backdrops for your wedding album"
-      },
-      {
-        icon: "🎀",
         title: "Decorated Vehicles",
-        description: "Ribbons and flowers to match your theme"
+        description: "Ribbons, flowers and styling to perfectly match your wedding theme"
       },
       {
-        icon: "👨‍✈️",
         title: "Professional Chauffeurs",
-        description: "Immaculately presented, experienced drivers"
+        description: "Immaculately presented, experienced drivers for seamless service"
       },
     ],
     startProgress: 0,
@@ -72,24 +64,16 @@ const serviceOverlays: ServiceOverlayData[] = [
     heading: "Film & Photoshoot Hire",
     services: [
       {
-        icon: "🎬",
         title: "Production Ready",
-        description: "Vehicles prepped for camera-ready appearances"
+        description: "Vehicles prepped and polished for camera-ready appearances"
       },
       {
-        icon: "🚗",
         title: "Diverse Fleet",
-        description: "From vintage classics to modern supercars"
+        description: "From vintage classics to modern supercars for any creative vision"
       },
       {
-        icon: "📍",
         title: "Location Flexible",
-        description: "Delivery anywhere in the UK"
-      },
-      {
-        icon: "⏰",
-        title: "Flexible Scheduling",
-        description: "Full-day and multi-day bookings available"
+        description: "Delivery and support anywhere in the UK for your shoot"
       },
     ],
     startProgress: 0.35,
@@ -100,24 +84,16 @@ const serviceOverlays: ServiceOverlayData[] = [
     heading: "Corporate & Events",
     services: [
       {
-        icon: "🏢",
         title: "Executive Transport",
-        description: "Impress clients with premium arrivals"
+        description: "Impress clients and guests with premium vehicle arrivals"
       },
       {
-        icon: "🎉",
         title: "Event Displays",
-        description: "Showcase vehicles at your venue"
+        description: "Showcase stunning vehicles as centrepieces at your venue"
       },
       {
-        icon: "🏷️",
         title: "Custom Branding",
-        description: "Decals and wraps for marketing campaigns"
-      },
-      {
-        icon: "👥",
-        title: "Fleet Bookings",
-        description: "Multiple vehicles for large events"
+        description: "Decals and wraps available for marketing campaigns"
       },
     ],
     startProgress: 0.65,
