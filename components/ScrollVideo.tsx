@@ -151,6 +151,11 @@ export default function ScrollVideo({
 
   // Check if video has completed
   const isComplete = progress >= 0.99
+  
+  // Calculate fade out opacity (starts fading at 90% progress)
+  const contentOpacity = progress > 0.9 
+    ? 1 - ((progress - 0.9) / 0.1)
+    : 1
 
   return (
     <div 
@@ -213,8 +218,11 @@ export default function ScrollVideo({
         </AnimatePresence>
         
         {/* Text Overlays */}
-        {isLoaded && textOverlays.length > 0 && !customOverlay && !isComplete && (
-          <div className="absolute inset-0 flex items-center justify-center">
+        {isLoaded && textOverlays.length > 0 && !customOverlay && (
+          <div 
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ opacity: contentOpacity }}
+          >
             <div className="text-center px-8 max-w-6xl relative">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -256,7 +264,11 @@ export default function ScrollVideo({
         )}
         
         {/* Custom Overlay */}
-        {isLoaded && customOverlay && !isComplete && customOverlay(activeIndex, progress)}
+        {isLoaded && customOverlay && (
+          <div style={{ opacity: contentOpacity }}>
+            {customOverlay(activeIndex, progress)}
+          </div>
+        )}
         
         {/* Scroll indicator */}
         <AnimatePresence>
