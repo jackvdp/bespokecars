@@ -36,6 +36,7 @@ const logos = [
 
 export default function HowItWorks() {
   const sectionRef = useRef(null)
+  const imagesRef = useRef(null)
   
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -48,6 +49,17 @@ export default function HowItWorks() {
   // Logos slide in from left (opposite direction)
   const logosX = useTransform(scrollYProgress, [0, 1], ["-100%", "0%"])
   const logosOpacity = useTransform(scrollYProgress, [0, 0.3, 0.8], [0, 0.5, 1])
+  
+  // Car images scroll animation
+  const { scrollYProgress: imagesScrollProgress } = useScroll({
+    target: imagesRef,
+    offset: ["start end", "end start"]
+  })
+  
+  const image1X = useTransform(imagesScrollProgress, [0, 0.5], ["-100%", "0%"])
+  const image1Opacity = useTransform(imagesScrollProgress, [0, 0.3], [0, 1])
+  const image2X = useTransform(imagesScrollProgress, [0, 0.5], ["100%", "0%"])
+  const image2Opacity = useTransform(imagesScrollProgress, [0, 0.3], [0, 1])
 
   return (
     <section
@@ -248,6 +260,7 @@ export default function HowItWorks() {
 
       {/* Featured Car Images */}
       <div
+        ref={imagesRef}
         style={{
           marginTop: '120px',
           width: '100%',
@@ -257,17 +270,19 @@ export default function HowItWorks() {
           gap: '24px',
         }}
       >
-        {/* First Image - Card aligned top */}
-        <div
+        {/* First Image - Slides in from left */}
+        <motion.div
           style={{
             position: 'relative',
             height: '500px',
             borderRadius: '24px',
             overflow: 'hidden',
+            x: image1X,
+            opacity: image1Opacity,
           }}
         >
           <Image
-            src="/images/cars/ferrarilondon.jpeg"
+            src="/images/cars/porschelondon.jpeg"
             alt="Ferrari in London"
             fill
             style={{ objectFit: 'cover' }}
@@ -311,19 +326,21 @@ export default function HowItWorks() {
               Our premium fleet features immaculate vehicles perfect for weddings, photoshoots, and special occasions. Each car is professionally maintained and detailed to perfection.
             </p>
           </motion.div>
-        </div>
+        </motion.div>
 
-        {/* Second Image - Card aligned bottom */}
-        <div
+        {/* Second Image - Slides in from right */}
+        <motion.div
           style={{
             position: 'relative',
             height: '500px',
             borderRadius: '24px',
             overflow: 'hidden',
+            x: image2X,
+            opacity: image2Opacity,
           }}
         >
           <Image
-            src="/images/cars/greenlambo.jpeg"
+            src="/images/cars/ferrarilondon.jpeg"
             alt="Green Lamborghini"
             fill
             style={{ objectFit: 'cover' }}
@@ -367,7 +384,7 @@ export default function HowItWorks() {
               Full insurance coverage, convenient pickup and delivery, expert maintenance, and personalised attention for every client's unique needs.
             </p>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   )
