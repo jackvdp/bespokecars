@@ -399,8 +399,8 @@ export default function HowItWorks() {
           opacity: buttonOpacity,
         }}
       >
-        <SecondaryButton href="#services" size="large">
-          View Our Services
+        <SecondaryButton href="/about" size="large">
+          About us
         </SecondaryButton>
       </motion.div>
     </section>
