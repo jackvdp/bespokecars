@@ -2,6 +2,7 @@
 
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
+import Image from 'next/image'
 
 const steps = [
   {
@@ -21,6 +22,15 @@ const steps = [
   },
 ]
 
+const logos = [
+  { src: '/images/logos/rolls.png', alt: 'Rolls Royce' },
+  { src: '/images/logos/bentley.png.webp', alt: 'Bentley' },
+  { src: '/images/logos/ferrari.png', alt: 'Ferrari' },
+  { src: '/images/logos/benz.png.webp', alt: 'Mercedes-Benz' },
+  { src: '/images/logos/range2.png', alt: 'Range Rover' },
+  { src: '/images/logos/lambo.png', alt: 'Lambo' },
+]
+
 export default function HowItWorks() {
   const sectionRef = useRef(null)
   
@@ -31,6 +41,10 @@ export default function HowItWorks() {
 
   const x = useTransform(scrollYProgress, [0, 1], ["100%", "0%"])
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [0, 0.5, 1])
+  
+  // Logos slide in from left (opposite direction)
+  const logosX = useTransform(scrollYProgress, [0, 1], ["-100%", "0%"])
+  const logosOpacity = useTransform(scrollYProgress, [0, 0.3, 0.8], [0, 0.5, 1])
 
   return (
     <section
@@ -179,6 +193,74 @@ export default function HowItWorks() {
               >
                 {step.description}
               </p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Car Logos */}
+      <motion.div
+        style={{
+          x: logosX,
+          opacity: logosOpacity,
+          marginTop: '100px',
+          width: '100%',
+          maxWidth: '1200px',
+        }}
+      >
+        <p
+          style={{
+            color: 'rgba(255, 255, 255, 0.4)',
+            fontSize: '12px',
+            fontWeight: 500,
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            fontFamily: 'var(--font-body)',
+            textAlign: 'center',
+            marginBottom: '40px',
+          }}
+        >
+          Featuring brands you love
+        </p>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '60px',
+            flexWrap: 'wrap',
+          }}
+        >
+          {logos.map((logo, index) => (
+            <motion.div
+              key={logo.alt}
+              style={{
+                position: 'relative',
+                width: '80px',
+                height: '80px',
+                opacity: 0.6,
+                filter: 'grayscale(100%) brightness(2)',
+                transition: 'all 0.3s ease',
+              }}
+              whileHover={{
+                opacity: 1,
+                filter: 'grayscale(0%) brightness(1)',
+                scale: 1.1,
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 0.6, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 0.5,
+                delay: index * 0.1,
+              }}
+            >
+              <Image
+                src={logo.src}
+                alt={logo.alt}
+                fill
+                style={{ objectFit: 'contain' }}
+              />
             </motion.div>
           ))}
         </div>
