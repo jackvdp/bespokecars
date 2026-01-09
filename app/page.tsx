@@ -1,5 +1,6 @@
 import ScrollVideo, { TextOverlay } from "@/components/ScrollVideo";
 import Navbar from "@/components/Navbar";
+import HowItWorks from "@/components/HowItWorks";
 
 const heroOverlays: TextOverlay[] = [
   {
@@ -41,7 +42,9 @@ export default function Home() {
       <ScrollVideo 
         src="/videos/cars.mp4" 
         textOverlays={heroOverlays}
+        scrollHeight="300vh"
       />
+      <HowItWorks />
     </main>
   );
 }

@@ -16,6 +16,7 @@ interface ScrollVideoProps {
   scrollHeight?: string
   showScrollIndicator?: boolean
   overlayGradient?: boolean
+  fadeOutStart?: number
 }
 
 export default function ScrollVideo({ 
@@ -23,7 +24,8 @@ export default function ScrollVideo({
   textOverlays = [],
   scrollHeight = "300vh",
   showScrollIndicator = true,
-  overlayGradient = true
+  overlayGradient = true,
+  fadeOutStart = 0.95
 }: ScrollVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -118,23 +120,40 @@ export default function ScrollVideo({
 
   const activeIndex = getActiveOverlayIndex()
 
+  // Calculate fade out opacity (starts fading at fadeOutStart progress)
+  const videoOpacity = 1
+
   return (
     <div 
       ref={containerRef}
       className="relative"
       style={{ height: scrollHeight }}
     >
-      <div className="sticky top-0 h-screen w-full overflow-hidden bg-background">
-        <video
-          ref={videoRef}
-          className="h-full w-full object-cover"
-          muted
-          playsInline
-          preload="auto"
-          src={src}
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
+        <div 
+          style={{ 
+            position: 'absolute',
+            inset: 0,
+            opacity: videoOpacity,
+            transition: 'opacity 0.1s ease-out',
+          }}
         >
-          Your browser does not support the video tag.
-        </video>
+          <video
+            ref={videoRef}
+            className="h-full w-full object-cover"
+            muted
+            playsInline
+            preload="auto"
+            src={src}
+          >
+            Your browser does not support the video tag.
+          </video>
+          
+          {/* Overlay gradient for better text visibility */}
+          {overlayGradient && (
+            <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-background/20 to-background/40 pointer-events-none" />
+          )}
+        </div>
         
         {/* Loading indicator */}
         <AnimatePresence>
@@ -159,7 +178,10 @@ export default function ScrollVideo({
         
         {/* Text Overlays */}
         {isLoaded && textOverlays.length > 0 && (
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div 
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ opacity: videoOpacity }}
+          >
             <div className="text-center px-8 max-w-6xl relative">
               <AnimatePresence mode="wait">
                 {textOverlays.map((overlay, index) => {
@@ -254,10 +276,6 @@ export default function ScrollVideo({
           )}
         </AnimatePresence>
         
-        {/* Overlay gradient for better text visibility */}
-        {overlayGradient && (
-          <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-background/20 to-background/40 pointer-events-none" />
-        )}
       </div>
     </div>
   )
