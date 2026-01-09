@@ -7,33 +7,27 @@ import ServiceOverlay, { ServiceOverlayData } from "@/components/ServiceOverlay"
 
 const heroOverlays: TextOverlay[] = [
   {
+    text: "Luxury Car Rental",
+    subtext: "Premium supercars & classics for your special moments",
+    startProgress: 0,
+    endProgress: 0.27
+  },
+  {
     text: "Trusted by Thousands",
     subtext: "10,000+ successful events across the UK",
-    startProgress: 0,
-    endProgress: 0.22
+    startProgress: 0.23,
+    endProgress: 0.52
   },
   {
-    text: "15+ Years of Excellence",
+    text: "25+ Years of Excellence",
     subtext: "Creating unforgettable experiences since day one",
-    startProgress: 0.18,
-    endProgress: 0.42
-  },
-  {
-    text: "Hand-Selected Fleet",
-    subtext: "Every vehicle curated for quality, performance & style",
-    startProgress: 0.38,
-    endProgress: 0.62
+    startProgress: 0.48,
+    endProgress: 0.77
   },
   {
     text: "Complete Peace of Mind",
     subtext: "Full insurance • 24/7 support • Professional delivery",
-    startProgress: 0.58,
-    endProgress: 0.82
-  },
-  {
-    text: "Your Vision, Perfected",
-    subtext: "Weddings • Film • Corporate • Private hire",
-    startProgress: 0.78,
+    startProgress: 0.73,
     endProgress: 1
   }
 ];

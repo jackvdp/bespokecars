@@ -6,6 +6,7 @@ import Image from 'next/image'
 import SectionBackground from './SectionBackground'
 import Card from './Card'
 import PrimaryButton from './PrimaryButton'
+import SecondaryButton from './SecondaryButton'
 
 const steps = [
   {
@@ -398,9 +399,9 @@ export default function HowItWorks() {
           opacity: buttonOpacity,
         }}
       >
-        <PrimaryButton href="#services" size="large">
+        <SecondaryButton href="#services" size="large">
           View Our Services
-        </PrimaryButton>
+        </SecondaryButton>
       </motion.div>
     </section>
   )

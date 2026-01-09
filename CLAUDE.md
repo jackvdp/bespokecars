@@ -207,6 +207,57 @@ whileHover={{
 whileTap={{ scale: 0.98 }}
 transition={{ duration: 0.2 }}
 ```
+
+---
+
+## Secondary Button
+
+### SecondaryButton Component
+Use the `<SecondaryButton />` component for secondary actions with a translucent background and border.
+
+```tsx
+import SecondaryButton from '@/components/SecondaryButton'
+
+<SecondaryButton href="#services" size="large">
+  View Our Services
+</SecondaryButton>
+```
+
+### Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | ReactNode | required | Button text/content |
+| `href` | string | optional | Link URL (renders as `<a>` tag) |
+| `onClick` | function | optional | Click handler (renders as `<button>` tag) |
+| `size` | `'small'` \| `'medium'` \| `'large'` | `'medium'` | Button size |
+
+### Size Variants
+| Size | Padding | Font Size |
+|------|---------|-----------|
+| `small` | `10px 24px` | `12px` |
+| `medium` | `14px 36px` | `13px` |
+| `large` | `16px 48px` | `14px` |
+
+### Button Styles
+- Background: `rgba(255, 255, 255, 0.05)` (translucent)
+- Text colour: `var(--foreground)` (white)
+- Border: `2px solid rgba(255, 255, 255, 0.3)`
+- Border radius: `9999px` (pill shape)
+- Font weight: `600`
+- Letter spacing: `0.1em`
+- Text transform: `uppercase`
+
+### Hover Animation
+```tsx
+whileHover={{
+  scale: 1.05,
+  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  borderColor: 'var(--primary)',
+  boxShadow: '0 0 20px rgba(0, 210, 200, 0.2)',
+}}
+whileTap={{ scale: 0.98 }}
+transition={{ duration: 0.2 }}
+```
 ```
 
 ---
