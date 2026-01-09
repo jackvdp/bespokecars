@@ -17,6 +17,7 @@ interface ScrollVideoProps {
   showScrollIndicator?: boolean
   overlayGradient?: boolean
   fadeOutStart?: number
+  customOverlay?: (activeIndex: number, progress: number) => React.ReactNode
 }
 
 export default function ScrollVideo({ 
@@ -25,12 +26,14 @@ export default function ScrollVideo({
   scrollHeight = "300vh",
   showScrollIndicator = true,
   overlayGradient = true,
-  fadeOutStart = 0.95
+  fadeOutStart = 0.95,
+  customOverlay
 }: ScrollVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [isLoaded, setIsLoaded] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
+  const [progress, setProgress] = useState(0)
   const [showIndicator, setShowIndicator] = useState(true)
   const [isInView, setIsInView] = useState(false)
   
@@ -106,24 +109,29 @@ export default function ScrollVideo({
       if (!isCurrentlyInView) return
       
       // Calculate progress (0 to 1)
-      const progress = Math.min(Math.max(scrolledIntoContainer / scrollableDistance, 0), 1)
+      const newProgress = Math.min(Math.max(scrolledIntoContainer / scrollableDistance, 0), 1)
       
-      scrollProgressRef.current = progress
+      scrollProgressRef.current = newProgress
+      
+      // Update progress state for custom overlay
+      if (Math.abs(newProgress - progress) > 0.01) {
+        setProgress(newProgress)
+      }
 
       // Update video time
-      const targetTime = progress * videoDurationRef.current
+      const targetTime = newProgress * videoDurationRef.current
       if (!isNaN(targetTime) && isFinite(targetTime)) {
         video.currentTime = targetTime
       }
 
       // Update active overlay - only triggers re-render when overlay changes
-      const newIndex = getActiveOverlayIndex(progress)
+      const newIndex = getActiveOverlayIndex(newProgress)
       if (newIndex !== activeIndex) {
         setActiveIndex(newIndex)
       }
 
       // Update scroll indicator visibility
-      const shouldShowIndicator = progress < 0.05
+      const shouldShowIndicator = newProgress < 0.05
       if (shouldShowIndicator !== showIndicator) {
         setShowIndicator(shouldShowIndicator)
       }
@@ -143,7 +151,7 @@ export default function ScrollVideo({
       window.removeEventListener('scroll', handleScroll)
       cancelAnimationFrame(rafId)
     }
-  }, [isLoaded, activeIndex, showIndicator, isInView, getActiveOverlayIndex])
+  }, [isLoaded, activeIndex, showIndicator, isInView, progress, getActiveOverlayIndex])
 
   return (
     <div 
@@ -192,7 +200,7 @@ export default function ScrollVideo({
         </AnimatePresence>
         
         {/* Text Overlays - simplified animations, no per-character */}
-        {isLoaded && textOverlays.length > 0 && (
+        {isLoaded && textOverlays.length > 0 && !customOverlay && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-8 max-w-6xl relative">
               <AnimatePresence mode="wait">
@@ -233,6 +241,9 @@ export default function ScrollVideo({
             </div>
           </div>
         )}
+        
+        {/* Custom Overlay */}
+        {isLoaded && customOverlay && customOverlay(activeIndex, progress)}
         
         {/* Scroll indicator */}
         <AnimatePresence>
