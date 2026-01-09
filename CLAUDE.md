@@ -131,38 +131,34 @@ Use the `<SectionBackground />` component for consistent section backgrounds.
 
 ## Cards
 
-### Standard Card
+### Card Component
+Use the `<Card />` component for consistent card styling.
+
 ```tsx
-<div style={{
-  position: 'relative',
-  padding: '40px',
-  borderRadius: '24px',
-  backgroundColor: 'rgba(255, 255, 255, 0.03)',
-  border: '1px solid rgba(255, 255, 255, 0.08)',
-  overflow: 'hidden',
-}}>
-  {/* Accent line at top */}
-  <div style={{
-    position: 'absolute',
-    top: 0,
-    left: '40px',
-    right: '40px',
-    height: '2px',
-    background: 'linear-gradient(90deg, transparent, var(--primary), transparent)',
-    opacity: 0.6,
-  }} />
-  
+import Card from '@/components/Card'
+
+<Card index={0} showAccentLine={true} animateOnScroll={true}>
   {/* Card content */}
-</div>
+</Card>
 ```
 
+### Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | ReactNode | required | Card content |
+| `index` | number | `0` | Index for stagger animation delay |
+| `showAccentLine` | boolean | `true` | Show cyan accent line at top |
+| `animateOnScroll` | boolean | `true` | Enable scroll-triggered fade-up animation |
+
+### Card Styles
+- Padding: `40px`
+- Border radius: `24px`
+- Background: `rgba(255, 255, 255, 0.03)`
+- Border: `1px solid rgba(255, 255, 255, 0.08)`
+
 ### Card Hover State
-```tsx
-whileHover={{
-  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  borderColor: 'var(--primary)',
-  transition: { duration: 0.3 },
-}}
+- Background: `rgba(255, 255, 255, 0.05)`
+- Border: `var(--primary)`
 ```
 
 ---

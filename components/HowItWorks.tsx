@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import SectionBackground from './SectionBackground'
+import Card from './Card'
 
 const steps = [
   {
@@ -115,43 +116,7 @@ export default function HowItWorks() {
           }}
         >
           {steps.map((step, index) => (
-            <motion.div
-              key={step.number}
-              style={{
-                position: 'relative',
-                padding: '40px',
-                borderRadius: '24px',
-                backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                overflow: 'hidden',
-              }}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{
-                duration: 0.6,
-                delay: index * 0.15,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              whileHover={{
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                borderColor: 'var(--primary)',
-                transition: { duration: 0.3 },
-              }}
-            >
-              {/* Top accent line - always visible */}
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: '40px',
-                  right: '40px',
-                  height: '2px',
-                  background: 'linear-gradient(90deg, transparent, var(--primary), transparent)',
-                  opacity: 0.6,
-                }}
-              />
-
+            <Card key={step.number} index={index}>
               {/* Step number */}
               <span
                 style={{
@@ -195,7 +160,7 @@ export default function HowItWorks() {
               >
                 {step.description}
               </p>
-            </motion.div>
+            </Card>
           ))}
         </div>
       </motion.div>
