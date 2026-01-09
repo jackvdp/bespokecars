@@ -13,7 +13,6 @@ const navLinks = [
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [hoveredLink, setHoveredLink] = useState<string | null>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -109,27 +108,15 @@ export default function Navbar() {
                   letterSpacing: '0.025em',
                   fontFamily: 'var(--font-body)',
                   textDecoration: 'none',
+                  borderRadius: '8px',
                 }}
-                onHoverStart={() => setHoveredLink(link.name)}
-                onHoverEnd={() => setHoveredLink(null)}
-                whileHover={{ color: 'var(--foreground)' }}
+                whileHover={{ 
+                  color: 'var(--primary)',
+                  textShadow: '0 0 20px var(--primary)',
+                }}
+                transition={{ duration: 0.2 }}
               >
-                {hoveredLink === link.name && (
-                  <motion.div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      borderRadius: '8px',
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    }}
-                    layoutId="navHover"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
-                  />
-                )}
-                <span style={{ position: 'relative', zIndex: 10 }}>{link.name}</span>
+                {link.name}
               </motion.a>
             ))}
           </div>
@@ -182,7 +169,7 @@ export default function Navbar() {
                 border: 'none',
                 cursor: 'pointer',
               }}
-              className="md:hidden"
+              className="flex md:hidden"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               whileTap={{ scale: 0.9 }}
             >
@@ -243,7 +230,6 @@ export default function Navbar() {
               inset: 0,
               zIndex: 40,
             }}
-            className="md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -294,7 +280,7 @@ export default function Navbar() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   whileHover={{ 
                     color: 'var(--primary)',
-                    textShadow: '0 0 30px var(--neon-blue-glow)'
+                    textShadow: '0 0 30px var(--primary)'
                   }}
                 >
                   {link.name}

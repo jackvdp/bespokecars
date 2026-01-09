@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import SectionBackground from './SectionBackground'
+import PrimaryButton from './PrimaryButton'
 
 export interface ServiceItem {
   title: string
@@ -44,8 +44,7 @@ export default function ServiceOverlay({ data, activeIndex }: ServiceOverlayProp
             width: '100%',
             padding: '48px',
             borderRadius: '32px',
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            backdropFilter: 'blur(20px)',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
             overflow: 'hidden',
           }}
@@ -169,6 +168,13 @@ export default function ServiceOverlay({ data, activeIndex }: ServiceOverlayProp
                   </p>
                 </motion.div>
               ))}
+            </div>
+
+            {/* CTA Button */}
+            <div style={{ textAlign: 'center', marginTop: '40px' }}>
+              <PrimaryButton href="#services" size="medium">
+                Learn More
+              </PrimaryButton>
             </div>
           </div>
         </motion.div>
