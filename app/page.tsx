@@ -39,8 +39,8 @@ export default function Home() {
   return (
     <main>
       <Navbar />
-      <ScrollVideo 
-        src="/videos/cars.mp4" 
+      <ScrollVideo
+        src="/videos/cars-optimised.mp4"
         textOverlays={heroOverlays}
         scrollHeight="300vh"
       />

@@ -30,16 +30,19 @@ export default function ScrollVideo({
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [isLoaded, setIsLoaded] = useState(false)
-  const [videoDuration, setVideoDuration] = useState(8)
-  const [scrollProgress, setScrollProgress] = useState(0)
-  const animationFrameRef = useRef<number>()
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [showIndicator, setShowIndicator] = useState(true)
+  
+  // Store values in refs to avoid re-renders
+  const videoDurationRef = useRef(8)
+  const scrollProgressRef = useRef(0)
   
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
 
     const handleLoadedMetadata = () => {
-      setVideoDuration(video.duration)
+      videoDurationRef.current = video.duration
       setIsLoaded(true)
       video.pause()
       video.currentTime = 0
@@ -56,72 +59,68 @@ export default function ScrollVideo({
     }
   }, [])
 
-  const updateVideoFrame = useCallback(() => {
-    const video = videoRef.current
-    const container = containerRef.current
-    if (!video || !container || !isLoaded) return
-
-    const scrollableHeight = window.innerHeight * 2
-    const scrolled = window.scrollY
-    const progress = Math.min(Math.max(scrolled / scrollableHeight, 0), 1)
-    
-    setScrollProgress(progress)
-
-    const targetTime = progress * videoDuration
-    
-    if (!isNaN(targetTime) && isFinite(targetTime)) {
-      const currentTime = video.currentTime
-      const diff = targetTime - currentTime
-      
-      if (Math.abs(diff) > 0.01) {
-        video.currentTime = targetTime
+  const getActiveOverlayIndex = useCallback((progress: number) => {
+    for (let i = textOverlays.length - 1; i >= 0; i--) {
+      const overlay = textOverlays[i]
+      if (i === 0) {
+        if (progress <= overlay.endProgress) return 0
+      } else {
+        const midPoint = (overlay.startProgress + textOverlays[i - 1].endProgress) / 2
+        if (progress >= midPoint && progress <= overlay.endProgress) return i
       }
     }
-  }, [isLoaded, videoDuration])
+    return textOverlays.length - 1
+  }, [textOverlays])
 
   useEffect(() => {
     if (!isLoaded) return
 
-    const handleScroll = () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
+    let rafId: number
+
+    const updateVideoFrame = () => {
+      const video = videoRef.current
+      if (!video) return
+
+      const scrollableHeight = window.innerHeight * 2
+      const scrolled = window.scrollY
+      const progress = Math.min(Math.max(scrolled / scrollableHeight, 0), 1)
       
-      animationFrameRef.current = requestAnimationFrame(updateVideoFrame)
+      scrollProgressRef.current = progress
+
+      // Update video time
+      const targetTime = progress * videoDurationRef.current
+      if (!isNaN(targetTime) && isFinite(targetTime)) {
+        video.currentTime = targetTime
+      }
+
+      // Update active overlay - only triggers re-render when overlay changes
+      const newIndex = getActiveOverlayIndex(progress)
+      if (newIndex !== activeIndex) {
+        setActiveIndex(newIndex)
+      }
+
+      // Update scroll indicator visibility
+      const shouldShowIndicator = progress < 0.05
+      if (shouldShowIndicator !== showIndicator) {
+        setShowIndicator(shouldShowIndicator)
+      }
+    }
+
+    const handleScroll = () => {
+      cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(updateVideoFrame)
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
     
+    // Initial update
     updateVideoFrame()
 
     return () => {
       window.removeEventListener('scroll', handleScroll)
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
+      cancelAnimationFrame(rafId)
     }
-  }, [isLoaded, updateVideoFrame])
-
-  const getActiveOverlayIndex = () => {
-    // Find which overlay should be active based on scroll progress
-    for (let i = textOverlays.length - 1; i >= 0; i--) {
-      const overlay = textOverlays[i]
-      if (i === 0) {
-        // First overlay is active from 0 until its end
-        if (scrollProgress <= overlay.endProgress) return 0
-      } else {
-        // Other overlays become active at their midpoint between start and previous end
-        const midPoint = (overlay.startProgress + textOverlays[i - 1].endProgress) / 2
-        if (scrollProgress >= midPoint && scrollProgress <= overlay.endProgress) return i
-      }
-    }
-    return textOverlays.length - 1
-  }
-
-  const activeIndex = getActiveOverlayIndex()
-
-  // Calculate fade out opacity (starts fading at fadeOutStart progress)
-  const videoOpacity = 1
+  }, [isLoaded, activeIndex, showIndicator, getActiveOverlayIndex])
 
   return (
     <div 
@@ -130,14 +129,7 @@ export default function ScrollVideo({
       style={{ height: scrollHeight }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden">
-        <div 
-          style={{ 
-            position: 'absolute',
-            inset: 0,
-            opacity: videoOpacity,
-            transition: 'opacity 0.1s ease-out',
-          }}
-        >
+        <div className="absolute inset-0">
           <video
             ref={videoRef}
             className="h-full w-full object-cover"
@@ -176,72 +168,44 @@ export default function ScrollVideo({
           )}
         </AnimatePresence>
         
-        {/* Text Overlays */}
+        {/* Text Overlays - simplified animations, no per-character */}
         {isLoaded && textOverlays.length > 0 && (
-          <div 
-            className="absolute inset-0 flex items-center justify-center"
-            style={{ opacity: videoOpacity }}
-          >
+          <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-8 max-w-6xl relative">
               <AnimatePresence mode="wait">
-                {textOverlays.map((overlay, index) => {
-                  if (index !== activeIndex) return null
-                  
-                  return (
-                    <motion.div
-                      key={index}
-                      className="flex flex-col items-center justify-center"
-                      initial={index === 0 ? { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" } : { opacity: 0, y: 60, scale: 0.9, filter: "blur(8px)" }}
-                      animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                      exit={{ opacity: 0, scale: 1.1, filter: "blur(12px)" }}
-                      transition={{ 
-                        duration: 0.6,
-                        ease: [0.22, 1, 0.36, 1]
+                <motion.div
+                  key={activeIndex}
+                  className="flex flex-col items-center justify-center"
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ 
+                    duration: 0.4,
+                    ease: [0.22, 1, 0.36, 1]
+                  }}
+                >
+                  <h1 
+                    className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-foreground mb-4 tracking-tight leading-none uppercase"
+                    style={{ 
+                      textShadow: '0 4px 30px rgba(0,0,0,0.7)',
+                      fontFamily: 'var(--font-title)',
+                      letterSpacing: '-0.02em'
+                    }}
+                  >
+                    {textOverlays[activeIndex]?.text}
+                  </h1>
+                  {textOverlays[activeIndex]?.subtext && (
+                    <p 
+                      className="text-xl sm:text-2xl md:text-3xl text-foreground/90 font-light tracking-wide"
+                      style={{ 
+                        textShadow: '0 2px 20px rgba(0,0,0,0.6)',
+                        fontFamily: 'var(--font-body)'
                       }}
                     >
-                      <motion.h1 
-                        className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-foreground mb-4 tracking-tight leading-none uppercase"
-                        style={{ 
-                          textShadow: '0 4px 30px rgba(0,0,0,0.7)',
-                          fontFamily: 'var(--font-title)',
-                          letterSpacing: '-0.02em'
-                        }}
-                        initial={index === 0 ? {} : { opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.1 }}
-                      >
-                        {overlay.text.split('').map((char, charIndex) => (
-                          <motion.span
-                            key={charIndex}
-                            initial={index === 0 ? {} : { opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ 
-                              duration: 0.4,
-                              delay: index === 0 ? 0 : 0.02 * charIndex,
-                              ease: [0.22, 1, 0.36, 1]
-                            }}
-                          >
-                            {char}
-                          </motion.span>
-                        ))}
-                      </motion.h1>
-                      {overlay.subtext && (
-                        <motion.p 
-                          className="text-xl sm:text-2xl md:text-3xl text-foreground/90 font-light tracking-wide"
-                          style={{ 
-                            textShadow: '0 2px 20px rgba(0,0,0,0.6)',
-                            fontFamily: 'var(--font-body)'
-                          }}
-                          initial={index === 0 ? {} : { opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.5, delay: index === 0 ? 0 : 0.3 }}
-                        >
-                          {overlay.subtext}
-                        </motion.p>
-                      )}
-                    </motion.div>
-                  )
-                })}
+                      {textOverlays[activeIndex]?.subtext}
+                    </p>
+                  )}
+                </motion.div>
               </AnimatePresence>
             </div>
           </div>
@@ -249,7 +213,7 @@ export default function ScrollVideo({
         
         {/* Scroll indicator */}
         <AnimatePresence>
-          {showScrollIndicator && isLoaded && scrollProgress < 0.05 && (
+          {showScrollIndicator && isLoaded && showIndicator && (
             <motion.div 
               className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-foreground text-center"
               initial={{ opacity: 0, y: -10 }}
