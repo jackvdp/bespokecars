@@ -240,11 +240,11 @@ export default function ScrollVideo({
                 <motion.div
                   key={activeIndex}
                   className="flex flex-col items-center justify-center"
-                  initial={{ opacity: 0, y: 40 }}
+                  initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
+                  exit={{ opacity: 0, y: -15 }}
                   transition={{ 
-                    duration: 0.4,
+                    duration: 0.25,
                     ease: [0.22, 1, 0.36, 1]
                   }}
                 >

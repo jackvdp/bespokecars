@@ -10,30 +10,30 @@ const heroOverlays: TextOverlay[] = [
     text: "Trusted by Thousands",
     subtext: "10,000+ successful events across the UK",
     startProgress: 0,
-    endProgress: 0.2
+    endProgress: 0.22
   },
   {
     text: "15+ Years of Excellence",
     subtext: "Creating unforgettable experiences since day one",
-    startProgress: 0.2,
-    endProgress: 0.4
+    startProgress: 0.18,
+    endProgress: 0.42
   },
   {
     text: "Hand-Selected Fleet",
     subtext: "Every vehicle curated for quality, performance & style",
-    startProgress: 0.4,
-    endProgress: 0.6
+    startProgress: 0.38,
+    endProgress: 0.62
   },
   {
     text: "Complete Peace of Mind",
     subtext: "Full insurance • 24/7 support • Professional delivery",
-    startProgress: 0.6,
-    endProgress: 0.8
+    startProgress: 0.58,
+    endProgress: 0.82
   },
   {
     text: "Your Vision, Perfected",
     subtext: "Weddings • Film • Corporate • Private hire",
-    startProgress: 0.8,
+    startProgress: 0.78,
     endProgress: 1
   }
 ];
@@ -57,7 +57,7 @@ const serviceOverlays: ServiceOverlayData[] = [
       },
     ],
     startProgress: 0,
-    endProgress: 0.35
+    endProgress: 0.38
   },
   {
     label: "Our Services",
@@ -76,8 +76,8 @@ const serviceOverlays: ServiceOverlayData[] = [
         description: "Delivery and support anywhere in the UK for your shoot"
       },
     ],
-    startProgress: 0.35,
-    endProgress: 0.65
+    startProgress: 0.32,
+    endProgress: 0.68
   },
   {
     label: "Our Services",
@@ -96,7 +96,7 @@ const serviceOverlays: ServiceOverlayData[] = [
         description: "Decals and wraps available for marketing campaigns"
       },
     ],
-    startProgress: 0.65,
+    startProgress: 0.62,
     endProgress: 1
   }
 ];

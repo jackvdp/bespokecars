@@ -31,11 +31,11 @@ export default function ServiceOverlay({ data, activeIndex }: ServiceOverlayProp
       <AnimatePresence mode="wait">
         <motion.div
           key={activeIndex}
-          initial={{ opacity: 0, y: 40, scale: 0.95 }}
+          initial={{ opacity: 0, y: 30, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -20, scale: 0.98 }}
+          exit={{ opacity: 0, y: -15, scale: 0.99 }}
           transition={{ 
-            duration: 0.5,
+            duration: 0.3,
             ease: [0.22, 1, 0.36, 1]
           }}
           style={{
