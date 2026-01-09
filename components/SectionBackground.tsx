@@ -13,11 +13,11 @@ export default function SectionBackground({
   const getGridMask = () => {
     switch (gridFadeDirection) {
       case 'down':
-        return 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%)'
+        return 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.5) 100%)'
       case 'up':
-        return 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%)'
+        return 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.5) 100%)'
       case 'both':
-        return 'linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 30%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)'
+        return 'linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,1) 30%, rgba(0,0,0,1) 70%, rgba(0,0,0,0.5) 100%)'
       case 'none':
         return 'none'
     }
@@ -54,8 +54,8 @@ export default function SectionBackground({
         style={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px)`,
           backgroundSize: '60px 60px',
           pointerEvents: 'none',
           maskImage: getGridMask(),
