@@ -343,7 +343,7 @@ export default function HowItWorks() {
           }}
         >
           <Image
-            src="/images/cars/ferrarilondon.jpeg"
+            src="/images/cars/bentley.jpeg"
             alt="Green Lamborghini"
             fill
             style={{ objectFit: 'cover' }}
