@@ -16,7 +16,6 @@ interface ScrollVideoProps {
   scrollHeight?: string
   showScrollIndicator?: boolean
   overlayGradient?: boolean
-  fadeOutStart?: number
   customOverlay?: (activeIndex: number, progress: number) => React.ReactNode
 }
 
@@ -26,7 +25,6 @@ export default function ScrollVideo({
   scrollHeight = "300vh",
   showScrollIndicator = true,
   overlayGradient = true,
-  fadeOutStart = 0.95,
   customOverlay
 }: ScrollVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -35,7 +33,7 @@ export default function ScrollVideo({
   const [activeIndex, setActiveIndex] = useState(0)
   const [progress, setProgress] = useState(0)
   const [showIndicator, setShowIndicator] = useState(true)
-  const [isInView, setIsInView] = useState(false)
+  const [isInView, setIsInView] = useState(true)
   
   // Store values in refs to avoid re-renders
   const videoDurationRef = useRef(8)
@@ -94,11 +92,9 @@ export default function ScrollVideo({
       const scrollableDistance = containerHeight - viewportHeight
       
       // How far we've scrolled into the container
-      // When top of container is at top of viewport, scrolledIntoContainer = 0
-      // When we've scrolled to the end, scrolledIntoContainer = scrollableDistance
       const scrolledIntoContainer = -rect.top
       
-      // Check if component is in view (with some buffer)
+      // Check if component is in view
       const isCurrentlyInView = rect.top < viewportHeight && rect.bottom > 0
       
       if (isCurrentlyInView !== isInView) {
@@ -153,13 +149,30 @@ export default function ScrollVideo({
     }
   }, [isLoaded, activeIndex, showIndicator, isInView, progress, getActiveOverlayIndex])
 
+  // Check if video has completed
+  const isComplete = progress >= 0.99
+
   return (
     <div 
       ref={containerRef}
-      className="relative"
-      style={{ height: scrollHeight }}
+      style={{ 
+        height: scrollHeight,
+        position: 'relative',
+      }}
     >
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+      {/* Video layer - fixed when in view */}
+      <div 
+        style={{
+          position: isInView ? 'fixed' : 'absolute',
+          top: isInView ? 0 : 'auto',
+          bottom: isInView ? 'auto' : 0,
+          left: 0,
+          width: '100%',
+          height: '100vh',
+          zIndex: 0,
+          pointerEvents: isComplete ? 'none' : 'auto',
+        }}
+      >
         <div className="absolute inset-0">
           <video
             ref={videoRef}
@@ -199,8 +212,8 @@ export default function ScrollVideo({
           )}
         </AnimatePresence>
         
-        {/* Text Overlays - simplified animations, no per-character */}
-        {isLoaded && textOverlays.length > 0 && !customOverlay && (
+        {/* Text Overlays */}
+        {isLoaded && textOverlays.length > 0 && !customOverlay && !isComplete && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-8 max-w-6xl relative">
               <AnimatePresence mode="wait">
@@ -243,7 +256,7 @@ export default function ScrollVideo({
         )}
         
         {/* Custom Overlay */}
-        {isLoaded && customOverlay && customOverlay(activeIndex, progress)}
+        {isLoaded && customOverlay && !isComplete && customOverlay(activeIndex, progress)}
         
         {/* Scroll indicator */}
         <AnimatePresence>
@@ -273,7 +286,6 @@ export default function ScrollVideo({
             </motion.div>
           )}
         </AnimatePresence>
-        
       </div>
     </div>
   )

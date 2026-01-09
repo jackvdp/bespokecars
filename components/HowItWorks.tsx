@@ -61,6 +61,7 @@ export default function HowItWorks() {
         justifyContent: 'center',
         overflow: 'hidden',
         position: 'relative',
+        zIndex: 1,
       }}
     >
       <SectionBackground glowPosition="both" gridFadeDirection="down" />
