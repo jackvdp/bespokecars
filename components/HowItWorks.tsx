@@ -60,6 +60,8 @@ export default function HowItWorks() {
   const image1Opacity = useTransform(imagesScrollProgress, [0, 0.3], [0, 1])
   const image2X = useTransform(imagesScrollProgress, [0, 0.5], ["100%", "0%"])
   const image2Opacity = useTransform(imagesScrollProgress, [0, 0.3], [0, 1])
+  const buttonY = useTransform(imagesScrollProgress, [0.1, 0.5], ["50px", "0px"])
+  const buttonOpacity = useTransform(imagesScrollProgress, [0.1, 0.4], [0, 1])
 
   return (
     <section
@@ -386,6 +388,20 @@ export default function HowItWorks() {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Services CTA Button */}
+      <motion.div 
+        style={{ 
+          textAlign: 'center', 
+          marginTop: '60px',
+          y: buttonY,
+          opacity: buttonOpacity,
+        }}
+      >
+        <PrimaryButton href="#services" size="large">
+          View Our Services
+        </PrimaryButton>
+      </motion.div>
     </section>
   )
 }
