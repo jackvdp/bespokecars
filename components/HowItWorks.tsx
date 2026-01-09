@@ -231,28 +231,21 @@ export default function HowItWorks() {
             flexWrap: 'wrap',
           }}
         >
-          {logos.map((logo, index) => (
+          {logos.map((logo) => (
             <motion.div
               key={logo.alt}
               style={{
                 position: 'relative',
                 width: '80px',
                 height: '80px',
-                opacity: 0.6,
-                filter: 'grayscale(100%) brightness(2)',
-                transition: 'all 0.3s ease',
+                filter: 'grayscale(100%) brightness(1.5)',
               }}
               whileHover={{
-                opacity: 1,
-                filter: 'grayscale(0%) brightness(1)',
-                scale: 1.1,
+                scale: 1.15,
               }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 0.6, y: 0 }}
-              viewport={{ once: true }}
               transition={{
-                duration: 0.5,
-                delay: index * 0.1,
+                duration: 0.2,
+                ease: 'easeOut',
               }}
             >
               <Image
