@@ -135,19 +135,17 @@ export default function HowItWorks() {
                 transition: { duration: 0.3 },
               }}
             >
-              {/* Glow effect on hover */}
-              <motion.div
+              {/* Top accent line - always visible */}
+              <div
                 style={{
                   position: 'absolute',
                   top: 0,
-                  left: 0,
-                  right: 0,
-                  height: '1px',
+                  left: '40px',
+                  right: '40px',
+                  height: '2px',
                   background: 'linear-gradient(90deg, transparent, var(--primary), transparent)',
-                  opacity: 0,
+                  opacity: 0.6,
                 }}
-                whileHover={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
               />
 
               {/* Step number */}
@@ -227,34 +225,45 @@ export default function HowItWorks() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '60px',
+            gap: '40px',
             flexWrap: 'wrap',
           }}
         >
-          {logos.map((logo) => (
-            <motion.div
-              key={logo.alt}
-              style={{
-                position: 'relative',
-                width: '80px',
-                height: '80px',
-                filter: 'grayscale(100%) brightness(1.5)',
-              }}
-              whileHover={{
-                scale: 1.15,
-              }}
-              transition={{
-                duration: 0.2,
-                ease: 'easeOut',
-              }}
-            >
-              <Image
-                src={logo.src}
-                alt={logo.alt}
-                fill
-                style={{ objectFit: 'contain' }}
-              />
-            </motion.div>
+          {logos.map((logo, index) => (
+            <div key={logo.alt} style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
+              <motion.div
+                style={{
+                  position: 'relative',
+                  width: '80px',
+                  height: '80px',
+                  filter: 'grayscale(100%) brightness(1.5)',
+                }}
+                whileHover={{
+                  scale: 1.15,
+                }}
+                transition={{
+                  duration: 0.2,
+                  ease: 'easeOut',
+                }}
+              >
+                <Image
+                  src={logo.src}
+                  alt={logo.alt}
+                  fill
+                  style={{ objectFit: 'contain' }}
+                />
+              </motion.div>
+              {index < logos.length - 1 && (
+                <div
+                  style={{
+                    width: '1px',
+                    height: '40px',
+                    background: 'linear-gradient(180deg, transparent, var(--primary), transparent)',
+                    opacity: 0.5,
+                  }}
+                />
+              )}
+            </div>
           ))}
         </div>
       </motion.div>
