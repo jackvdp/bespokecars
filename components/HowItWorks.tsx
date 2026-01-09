@@ -237,6 +237,130 @@ export default function HowItWorks() {
           ))}
         </div>
       </motion.div>
+
+      {/* Featured Car Images */}
+      <div
+        style={{
+          marginTop: '120px',
+          width: '100%',
+          maxWidth: '1200px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))',
+          gap: '24px',
+        }}
+      >
+        {/* First Image - Card aligned top */}
+        <div
+          style={{
+            position: 'relative',
+            height: '500px',
+            borderRadius: '24px',
+            overflow: 'hidden',
+          }}
+        >
+          <Image
+            src="/images/cars/ferrarilondon.jpeg"
+            alt="Ferrari in London"
+            fill
+            style={{ objectFit: 'cover' }}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-200px' }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              position: 'absolute',
+              top: '24px',
+              left: '24px',
+              right: '24px',
+              padding: '24px',
+              borderRadius: '16px',
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+            }}
+          >
+            <h3
+              style={{
+                color: 'var(--foreground)',
+                fontSize: '20px',
+                fontWeight: 600,
+                fontFamily: 'var(--font-title)',
+                marginBottom: '8px',
+              }}
+            >
+              Experience luxury like never before
+            </h3>
+            <p
+              style={{
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: '14px',
+                fontFamily: 'var(--font-body)',
+                lineHeight: 1.6,
+              }}
+            >
+              Our premium fleet features immaculate vehicles perfect for weddings, photoshoots, and special occasions. Each car is professionally maintained and detailed to perfection.
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Second Image - Card aligned bottom */}
+        <div
+          style={{
+            position: 'relative',
+            height: '500px',
+            borderRadius: '24px',
+            overflow: 'hidden',
+          }}
+        >
+          <Image
+            src="/images/cars/greenlambo.jpeg"
+            alt="Green Lamborghini"
+            fill
+            style={{ objectFit: 'cover' }}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-200px' }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              position: 'absolute',
+              bottom: '24px',
+              left: '24px',
+              right: '24px',
+              padding: '24px',
+              borderRadius: '16px',
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+            }}
+          >
+            <h3
+              style={{
+                color: 'var(--foreground)',
+                fontSize: '20px',
+                fontWeight: 600,
+                fontFamily: 'var(--font-title)',
+                marginBottom: '8px',
+              }}
+            >
+              Professional service you can trust
+            </h3>
+            <p
+              style={{
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: '14px',
+                fontFamily: 'var(--font-body)',
+                lineHeight: 1.6,
+              }}
+            >
+              Full insurance coverage, convenient pickup and delivery, expert maintenance, and personalised attention for every client's unique needs.
+            </p>
+          </motion.div>
+        </div>
+      </div>
     </section>
   )
 }

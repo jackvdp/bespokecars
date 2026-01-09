@@ -17,6 +17,7 @@ interface ScrollVideoProps {
   showScrollIndicator?: boolean
   overlayGradient?: boolean
   customOverlay?: (activeIndex: number, progress: number) => React.ReactNode
+  contentFadeIn?: number // Progress (0-1) at which content starts appearing
 }
 
 export default function ScrollVideo({ 
@@ -25,7 +26,8 @@ export default function ScrollVideo({
   scrollHeight = "300vh",
   showScrollIndicator = true,
   overlayGradient = true,
-  customOverlay
+  customOverlay,
+  contentFadeIn = 0
 }: ScrollVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -156,6 +158,14 @@ export default function ScrollVideo({
   const contentOpacity = progress > 0.9 
     ? 1 - ((progress - 0.9) / 0.1)
     : 1
+  
+  // Calculate fade in opacity (if contentFadeIn is set)
+  const fadeInOpacity = contentFadeIn > 0 && progress < contentFadeIn
+    ? progress / contentFadeIn
+    : 1
+  
+  // Combined opacity
+  const finalContentOpacity = Math.min(contentOpacity, fadeInOpacity)
 
   return (
     <div 
@@ -221,7 +231,7 @@ export default function ScrollVideo({
         {isLoaded && textOverlays.length > 0 && !customOverlay && (
           <div 
             className="absolute inset-0 flex items-center justify-center"
-            style={{ opacity: contentOpacity }}
+            style={{ opacity: finalContentOpacity }}
           >
             <div className="text-center px-8 max-w-6xl relative">
               <AnimatePresence mode="wait">
@@ -265,7 +275,7 @@ export default function ScrollVideo({
         
         {/* Custom Overlay */}
         {isLoaded && customOverlay && (
-          <div style={{ opacity: contentOpacity }}>
+          <div style={{ opacity: finalContentOpacity }}>
             {customOverlay(activeIndex, progress)}
           </div>
         )}

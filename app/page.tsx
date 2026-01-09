@@ -114,6 +114,7 @@ export default function Home() {
       <ScrollVideo
         src="/videos/lambo-optimised.mp4"
         scrollHeight="400vh"
+        contentFadeIn={0.15}
         customOverlay={(activeIndex) => (
           <ServiceOverlay data={serviceOverlays} activeIndex={activeIndex} />
         )}
