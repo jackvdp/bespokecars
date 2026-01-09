@@ -32,6 +32,7 @@ export default function ScrollVideo({
   const [isLoaded, setIsLoaded] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const [showIndicator, setShowIndicator] = useState(true)
+  const [isInView, setIsInView] = useState(false)
   
   // Store values in refs to avoid re-renders
   const videoDurationRef = useRef(8)
@@ -79,11 +80,33 @@ export default function ScrollVideo({
 
     const updateVideoFrame = () => {
       const video = videoRef.current
-      if (!video) return
+      const container = containerRef.current
+      if (!video || !container) return
 
-      const scrollableHeight = window.innerHeight * 2
-      const scrolled = window.scrollY
-      const progress = Math.min(Math.max(scrolled / scrollableHeight, 0), 1)
+      const rect = container.getBoundingClientRect()
+      const containerHeight = container.offsetHeight
+      const viewportHeight = window.innerHeight
+      
+      // Calculate scrollable distance (container height minus one viewport)
+      const scrollableDistance = containerHeight - viewportHeight
+      
+      // How far we've scrolled into the container
+      // When top of container is at top of viewport, scrolledIntoContainer = 0
+      // When we've scrolled to the end, scrolledIntoContainer = scrollableDistance
+      const scrolledIntoContainer = -rect.top
+      
+      // Check if component is in view (with some buffer)
+      const isCurrentlyInView = rect.top < viewportHeight && rect.bottom > 0
+      
+      if (isCurrentlyInView !== isInView) {
+        setIsInView(isCurrentlyInView)
+      }
+      
+      // Only update video if in view
+      if (!isCurrentlyInView) return
+      
+      // Calculate progress (0 to 1)
+      const progress = Math.min(Math.max(scrolledIntoContainer / scrollableDistance, 0), 1)
       
       scrollProgressRef.current = progress
 
@@ -120,7 +143,7 @@ export default function ScrollVideo({
       window.removeEventListener('scroll', handleScroll)
       cancelAnimationFrame(rafId)
     }
-  }, [isLoaded, activeIndex, showIndicator, getActiveOverlayIndex])
+  }, [isLoaded, activeIndex, showIndicator, isInView, getActiveOverlayIndex])
 
   return (
     <div 

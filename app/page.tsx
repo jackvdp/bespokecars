@@ -45,6 +45,11 @@ export default function Home() {
         scrollHeight="300vh"
       />
       <HowItWorks />
+      <ScrollVideo
+          src="/videos/lambo-optimised.mp4"
+          textOverlays={heroOverlays}
+          scrollHeight="300vh"
+      />
     </main>
   );
 }
