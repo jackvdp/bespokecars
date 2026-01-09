@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
+import SectionBackground from './SectionBackground'
 
 const steps = [
   {
@@ -61,36 +62,8 @@ export default function HowItWorks() {
         position: 'relative',
       }}
     >
-      {/* Background gradient */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0, 210, 200, 0.15) 0%, transparent 60%)',
-          pointerEvents: 'none',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'radial-gradient(ellipse 60% 40% at 100% 100%, rgba(0, 210, 200, 0.1) 0%, transparent 50%)',
-          pointerEvents: 'none',
-        }}
-      />
-      {/* Subtle grid pattern with fade */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px',
-          pointerEvents: 'none',
-          maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%)',
-        }}
-      />
+      <SectionBackground glowPosition="both" gridFadeDirection="down" />
+
       <motion.div 
         style={{ 
           maxWidth: '1200px', 
