@@ -17,7 +17,7 @@ interface ScrollVideoProps {
   showScrollIndicator?: boolean
   overlayGradient?: boolean
   customOverlay?: (activeIndex: number, progress: number) => React.ReactNode
-  contentFadeIn?: number // Progress (0-1) at which content starts appearing
+  contentFadeIn?: number
 }
 
 export default function ScrollVideo({ 
@@ -33,13 +33,12 @@ export default function ScrollVideo({
   const containerRef = useRef<HTMLDivElement>(null)
   const [isLoaded, setIsLoaded] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
-  const [progress, setProgress] = useState(0)
+  const [contentProgress, setContentProgress] = useState(0)
   const [showIndicator, setShowIndicator] = useState(true)
   const [isInView, setIsInView] = useState(true)
+  const [isFullFrame, setIsFullFrame] = useState(true)
   
-  // Store values in refs to avoid re-renders
   const videoDurationRef = useRef(8)
-  const scrollProgressRef = useRef(0)
   
   useEffect(() => {
     const video = videoRef.current
@@ -90,46 +89,54 @@ export default function ScrollVideo({
       const containerHeight = container.offsetHeight
       const viewportHeight = window.innerHeight
       
-      // Calculate scrollable distance (container height minus one viewport)
-      const scrollableDistance = containerHeight - viewportHeight
+      // VIDEO TIMELINE: plays while any part of container is visible
+      // Starts when top of container hits bottom of viewport
+      // Ends when bottom of container leaves top of viewport
+      const totalVideoScrollDistance = containerHeight + viewportHeight
+      const videoScrolled = viewportHeight - rect.top
+      const videoProgress = Math.min(Math.max(videoScrolled / totalVideoScrollDistance, 0), 1)
       
-      // How far we've scrolled into the container
-      const scrolledIntoContainer = -rect.top
-      
-      // Check if component is in view
-      const isCurrentlyInView = rect.top < viewportHeight && rect.bottom > 0
+      // Check if any part is in view
+      const isCurrentlyInView = rect.bottom > 0 && rect.top < viewportHeight
       
       if (isCurrentlyInView !== isInView) {
         setIsInView(isCurrentlyInView)
       }
       
-      // Only update video if in view
-      if (!isCurrentlyInView) return
+      // Update video time based on video progress
+      if (isCurrentlyInView) {
+        const targetTime = videoProgress * videoDurationRef.current
+        if (!isNaN(targetTime) && isFinite(targetTime)) {
+          video.currentTime = targetTime
+        }
+      }
       
-      // Calculate progress (0 to 1)
-      const newProgress = Math.min(Math.max(scrolledIntoContainer / scrollableDistance, 0), 1)
+      // CONTENT TIMELINE: only when video is 100% in frame
+      // Starts when top of container hits top of viewport
+      // Ends when bottom of container hits bottom of viewport (next section starting to appear)
+      const contentScrollDistance = containerHeight - viewportHeight
+      const contentScrolled = -rect.top
+      const newContentProgress = Math.min(Math.max(contentScrolled / contentScrollDistance, 0), 1)
       
-      scrollProgressRef.current = newProgress
+      // Full frame = top of container is at or below top of viewport AND bottom is at or above bottom of viewport
+      const isCurrentlyFullFrame = rect.top <= 0 && rect.bottom >= viewportHeight
       
-      // Update progress state for custom overlay
-      if (Math.abs(newProgress - progress) > 0.01) {
-        setProgress(newProgress)
+      if (isCurrentlyFullFrame !== isFullFrame) {
+        setIsFullFrame(isCurrentlyFullFrame)
+      }
+      
+      if (Math.abs(newContentProgress - contentProgress) > 0.005) {
+        setContentProgress(newContentProgress)
       }
 
-      // Update video time
-      const targetTime = newProgress * videoDurationRef.current
-      if (!isNaN(targetTime) && isFinite(targetTime)) {
-        video.currentTime = targetTime
-      }
-
-      // Update active overlay - only triggers re-render when overlay changes
-      const newIndex = getActiveOverlayIndex(newProgress)
+      // Update active overlay based on content progress
+      const newIndex = getActiveOverlayIndex(newContentProgress)
       if (newIndex !== activeIndex) {
         setActiveIndex(newIndex)
       }
 
       // Update scroll indicator visibility
-      const shouldShowIndicator = newProgress < 0.05
+      const shouldShowIndicator = newContentProgress < 0.05
       if (shouldShowIndicator !== showIndicator) {
         setShowIndicator(shouldShowIndicator)
       }
@@ -141,31 +148,24 @@ export default function ScrollVideo({
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
-    
-    // Initial update
     updateVideoFrame()
 
     return () => {
       window.removeEventListener('scroll', handleScroll)
       cancelAnimationFrame(rafId)
     }
-  }, [isLoaded, activeIndex, showIndicator, isInView, progress, getActiveOverlayIndex])
+  }, [isLoaded, activeIndex, showIndicator, isInView, isFullFrame, contentProgress, getActiveOverlayIndex])
 
-  // Check if video has completed
-  const isComplete = progress >= 0.99
-  
-  // Calculate fade out opacity (starts fading at 90% progress)
-  const contentOpacity = progress > 0.9 
-    ? 1 - ((progress - 0.9) / 0.1)
+  // Content opacity: fade in based on contentFadeIn prop, fade out as we approach end
+  const fadeInOpacity = contentFadeIn > 0 && contentProgress < contentFadeIn
+    ? contentProgress / contentFadeIn
     : 1
   
-  // Calculate fade in opacity (if contentFadeIn is set)
-  const fadeInOpacity = contentFadeIn > 0 && progress < contentFadeIn
-    ? progress / contentFadeIn
+  const fadeOutOpacity = contentProgress > 0.85
+    ? 1 - ((contentProgress - 0.85) / 0.15)
     : 1
   
-  // Combined opacity
-  const finalContentOpacity = Math.min(contentOpacity, fadeInOpacity)
+  const contentOpacity = isFullFrame ? Math.min(fadeInOpacity, fadeOutOpacity) : 0
 
   return (
     <div 
@@ -185,7 +185,6 @@ export default function ScrollVideo({
           width: '100%',
           height: '100vh',
           zIndex: 0,
-          pointerEvents: isComplete ? 'none' : 'auto',
         }}
       >
         <div className="absolute inset-0">
@@ -200,7 +199,6 @@ export default function ScrollVideo({
             Your browser does not support the video tag.
           </video>
           
-          {/* Overlay gradient for better text visibility */}
           {overlayGradient && (
             <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-background/20 to-background/40 pointer-events-none" />
           )}
@@ -227,11 +225,15 @@ export default function ScrollVideo({
           )}
         </AnimatePresence>
         
-        {/* Text Overlays */}
+        {/* Text Overlays - only visible when full frame */}
         {isLoaded && textOverlays.length > 0 && !customOverlay && (
           <div 
             className="absolute inset-0 flex items-center justify-center"
-            style={{ opacity: finalContentOpacity }}
+            style={{ 
+              opacity: contentOpacity,
+              pointerEvents: contentOpacity > 0 ? 'auto' : 'none',
+              transition: 'opacity 0.2s ease-out',
+            }}
           >
             <div className="text-center px-8 max-w-6xl relative">
               <AnimatePresence mode="wait">
@@ -273,16 +275,22 @@ export default function ScrollVideo({
           </div>
         )}
         
-        {/* Custom Overlay */}
+        {/* Custom Overlay - only visible when full frame */}
         {isLoaded && customOverlay && (
-          <div style={{ opacity: finalContentOpacity }}>
-            {customOverlay(activeIndex, progress)}
+          <div 
+            style={{ 
+              opacity: contentOpacity,
+              pointerEvents: contentOpacity > 0 ? 'auto' : 'none',
+              transition: 'opacity 0.2s ease-out',
+            }}
+          >
+            {customOverlay(activeIndex, contentProgress)}
           </div>
         )}
         
         {/* Scroll indicator */}
         <AnimatePresence>
-          {showScrollIndicator && isLoaded && showIndicator && (
+          {showScrollIndicator && isLoaded && showIndicator && isFullFrame && (
             <motion.div 
               className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-foreground text-center"
               initial={{ opacity: 0, y: -10 }}
