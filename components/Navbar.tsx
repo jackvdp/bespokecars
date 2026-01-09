@@ -144,43 +144,29 @@ export default function Navbar() {
                 borderRadius: '9999px',
                 overflow: 'hidden',
                 textDecoration: 'none',
+                backgroundColor: 'var(--primary)',
               }}
               className="hidden sm:flex"
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ 
+                scale: 1.05,
+                boxShadow: '0 0 30px var(--primary)',
+              }}
               whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.2 }}
             >
-              <motion.div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  backgroundColor: 'var(--primary)',
-                }}
-                whileHover={{ 
-                  boxShadow: '0 0 40px var(--neon-blue-glow)',
-                }}
-              />
-              <motion.div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent)',
-                }}
-                initial={{ x: '-100%' }}
-                whileHover={{ x: '100%' }}
-                transition={{ duration: 0.5 }}
-              />
               <span 
                 style={{
                   position: 'relative',
                   zIndex: 10,
                   color: 'var(--background)',
                   fontWeight: 600,
-                  fontSize: '14px',
-                  letterSpacing: '0.025em',
-                  fontFamily: 'var(--font-title)',
+                  fontSize: '13px',
+                  letterSpacing: '0.1em',
+                  fontFamily: 'var(--font-body)',
+                  textTransform: 'uppercase',
                 }}
               >
-                BOOK NOW
+                Book Now
               </span>
             </motion.a>
 
@@ -323,10 +309,11 @@ export default function Navbar() {
                   backgroundColor: 'var(--primary)',
                   color: 'var(--background)',
                   fontWeight: 600,
-                  fontSize: '18px',
-                  letterSpacing: '0.025em',
-                  fontFamily: 'var(--font-title)',
+                  fontSize: '16px',
+                  letterSpacing: '0.1em',
+                  fontFamily: 'var(--font-body)',
                   textDecoration: 'none',
+                  textTransform: 'uppercase',
                 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -334,12 +321,12 @@ export default function Navbar() {
                 transition={{ delay: 0.3 }}
                 onClick={() => setIsMobileMenuOpen(false)}
                 whileHover={{ 
-                  boxShadow: '0 0 40px var(--neon-blue-glow)',
+                  boxShadow: '0 0 30px var(--primary)',
                   scale: 1.05
                 }}
-                whileTap={{ scale: 0.95 }}
+                whileTap={{ scale: 0.98 }}
               >
-                BOOK NOW
+                Book Now
               </motion.a>
             </motion.div>
           </motion.div>

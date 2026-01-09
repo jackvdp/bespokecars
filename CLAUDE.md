@@ -159,6 +159,54 @@ import Card from '@/components/Card'
 ### Card Hover State
 - Background: `rgba(255, 255, 255, 0.05)`
 - Border: `var(--primary)`
+
+---
+
+## Primary Button
+
+### PrimaryButton Component
+Use the `<PrimaryButton />` component for call-to-action buttons with the signature neon glow hover effect.
+
+```tsx
+import PrimaryButton from '@/components/PrimaryButton'
+
+<PrimaryButton href="#book" size="large">
+  Book Now
+</PrimaryButton>
+```
+
+### Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | ReactNode | required | Button text/content |
+| `href` | string | optional | Link URL (renders as `<a>` tag) |
+| `onClick` | function | optional | Click handler (renders as `<button>` tag) |
+| `size` | `'small'` \| `'medium'` \| `'large'` | `'medium'` | Button size |
+
+### Size Variants
+| Size | Padding | Font Size |
+|------|---------|-----------|
+| `small` | `10px 24px` | `12px` |
+| `medium` | `14px 36px` | `13px` |
+| `large` | `16px 48px` | `14px` |
+
+### Button Styles
+- Background: `var(--primary)` (neon cyan)
+- Text colour: `var(--background)` (black)
+- Border radius: `9999px` (pill shape)
+- Font weight: `600`
+- Letter spacing: `0.1em`
+- Text transform: `uppercase`
+
+### Hover Animation
+```tsx
+whileHover={{
+  scale: 1.05,
+  boxShadow: '0 0 30px var(--primary)',
+}}
+whileTap={{ scale: 0.98 }}
+transition={{ duration: 0.2 }}
+```
 ```
 
 ---

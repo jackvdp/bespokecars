@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import SectionBackground from './SectionBackground'
 import Card from './Card'
+import PrimaryButton from './PrimaryButton'
 
 const steps = [
   {
@@ -163,6 +164,13 @@ export default function HowItWorks() {
               </p>
             </Card>
           ))}
+        </div>
+
+        {/* CTA Button */}
+        <div style={{ textAlign: 'center', marginTop: '60px' }}>
+          <PrimaryButton href="#book" size="large">
+            Book Now
+          </PrimaryButton>
         </div>
       </motion.div>
 
