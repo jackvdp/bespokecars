@@ -130,12 +130,12 @@ export default function ServicesScrollContent({ scrollYProgress }: ServicesScrol
               flexShrink: 0,
               padding: '48px',
               borderRadius: '32px',
-              backgroundColor: 'rgba(0, 0, 0, 0.85)',
+              backgroundColor: '#0a0a0a',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               overflow: 'hidden',
             }}
           >
-            {/* Grid background inside card */}
+            {/* Grid background inside card - fades out towards bottom */}
             <div
               style={{
                 position: 'absolute',
@@ -145,6 +145,8 @@ export default function ServicesScrollContent({ scrollYProgress }: ServicesScrol
                 backgroundSize: '40px 40px',
                 pointerEvents: 'none',
                 borderRadius: '32px',
+                maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0) 70%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0) 70%)',
               }}
             />
             
