@@ -5,8 +5,7 @@ import ScrollVideoSimple from "@/components/ScrollVideoSimple";
 import ServicesScrollContent from "@/components/ServicesScrollContent";
 import Navbar from "@/components/Navbar";
 import HowItWorks from "@/components/HowItWorks";
-import FleetSection from "@/components/FleetSection";
-import ContactSection from "@/components/ContactSection";
+import FleetContactSection from "@/components/FleetContactSection";
 
 interface Car {
   _id: string
@@ -66,8 +65,7 @@ export default function HomeContent({ cars }: HomeContentProps) {
           <ServicesScrollContent scrollYProgress={scrollYProgress} />
         )}
       </ScrollVideoSimple>
-      <FleetSection cars={cars} />
-      <ContactSection />
+      <FleetContactSection cars={cars} />
     </main>
   );
 }
