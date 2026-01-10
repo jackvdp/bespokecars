@@ -51,17 +51,23 @@ export default function HowItWorks() {
     target: sectionRef,
     offset: ["start start", "end end"]
   })
-
-  // Initial content animations (steps and logos slide in during first part of scroll)
-  const stepsX = useTransform(scrollYProgress, [0, 0.15], ["100%", "0%"])
-  const stepsOpacity = useTransform(scrollYProgress, [0, 0.1, 0.15], [0, 0.5, 1])
   
-  const logosX = useTransform(scrollYProgress, [0.05, 0.2], ["-100%", "0%"])
-  const logosOpacity = useTransform(scrollYProgress, [0.05, 0.15, 0.2], [0, 0.5, 1])
+  // Separate scroll progress for initial animations (starts when section comes into view)
+  const { scrollYProgress: entryProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "start start"]
+  })
+
+  // Initial content animations (steps and logos slide in as section enters viewport)
+  const stepsX = useTransform(entryProgress, [0, 0.8], ["100%", "0%"])
+  const stepsOpacity = useTransform(entryProgress, [0, 0.4, 0.8], [0, 0.5, 1])
+  
+  const logosX = useTransform(entryProgress, [0.2, 1], ["-100%", "0%"])
+  const logosOpacity = useTransform(entryProgress, [0.2, 0.6, 1], [0, 0.5, 1])
   
   // Horizontal scroll movement (moves content left to reveal images section)
-  // This happens after the initial animations complete
-  const horizontalX = useTransform(scrollYProgress, [0.25, 0.85], [0, -screenWidth])
+  // Starts immediately when section is fully in view (scrollYProgress = 0)
+  const horizontalX = useTransform(scrollYProgress, [0, 0.9], [0, -screenWidth])
 
   return (
     <section
@@ -310,6 +316,39 @@ export default function HowItWorks() {
                 zIndex: 1,
               }}
             >
+              {/* Header */}
+              <div
+                style={{
+                  textAlign: 'center',
+                  marginBottom: '60px',
+                }}
+              >
+                <p
+                  style={{
+                    color: 'var(--primary)',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    letterSpacing: '0.2em',
+                    textTransform: 'uppercase',
+                    fontFamily: 'var(--font-body)',
+                    marginBottom: '16px',
+                  }}
+                >
+                  About Us
+                </p>
+                <h2
+                  style={{
+                    color: 'var(--foreground)',
+                    fontSize: 'clamp(32px, 5vw, 56px)',
+                    fontWeight: 600,
+                    fontFamily: 'var(--font-title)',
+                    letterSpacing: '-0.02em',
+                  }}
+                >
+                  Why choose Bespoke
+                </h2>
+              </div>
+
               {/* Featured Car Images */}
               <div
                 style={{
