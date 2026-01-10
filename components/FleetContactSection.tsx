@@ -370,13 +370,17 @@ export default function FleetContactSection({ cars }: FleetContactSectionProps) 
               flexShrink: 0,
               position: 'relative',
               overflow: 'hidden',
+              clipPath: 'inset(0)',
             }}
           >
             {/* Map Background with Parallax */}
             <motion.div
               style={{
                 position: 'absolute',
-                inset: '-10%',
+                top: '-10%',
+                bottom: '-10%',
+                left: 0,
+                right: '-10%',
                 zIndex: 0,
                 y: mapY,
                 scale: mapScale,
@@ -427,7 +431,7 @@ export default function FleetContactSection({ cars }: FleetContactSectionProps) 
               style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'radial-gradient(ellipse at center, transparent 30%, var(--background) 90%)',
+                background: 'radial-gradient(ellipse at center, transparent 20%, var(--background) 80%)',
                 pointerEvents: 'none',
                 zIndex: 2,
               }}
