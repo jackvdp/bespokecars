@@ -56,12 +56,19 @@ const contactInfo = [
 export default function FleetContactSection({ cars }: FleetContactSectionProps) {
   const sectionRef = useRef(null)
   const fleetPanelRef = useRef<HTMLDivElement>(null)
+  const [screenHeight, setScreenHeight] = useState(800)
   const [screenWidth, setScreenWidth] = useState(1200)
-  const [fleetPanelHeight, setFleetPanelHeight] = useState(1000)
+  const [fleetPanelHeight, setFleetPanelHeight] = useState(1200)
   
   useEffect(() => {
+    setScreenHeight(window.innerHeight)
     setScreenWidth(window.innerWidth)
-    const handleResize = () => setScreenWidth(window.innerWidth)
+    
+    const handleResize = () => {
+      setScreenHeight(window.innerHeight)
+      setScreenWidth(window.innerWidth)
+    }
+    
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
@@ -72,40 +79,50 @@ export default function FleetContactSection({ cars }: FleetContactSectionProps) 
     }
   }, [cars])
   
+  // Calculate scroll amounts
+  const verticalScrollAmount = Math.max(0, fleetPanelHeight - screenHeight)
+  const horizontalStartOffset = Math.max(0, verticalScrollAmount)
+  
+  // Total section height
+  const totalHeight = fleetPanelHeight + screenWidth + screenHeight
+
   // Scroll progress for initial entry animation
   const { scrollYProgress: entryProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "start start"]
   })
   
-  // Scroll progress for vertical scrolling within fleet panel
-  const { scrollYProgress: verticalProgress } = useScroll({
+  // Single scroll progress for the whole section
+  const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start start", `${fleetPanelHeight}px end`]
-  })
-  
-  // Scroll progress for horizontal movement (after vertical scroll completes)
-  const { scrollYProgress: horizontalProgress } = useScroll({
-    target: sectionRef,
-    offset: [`${fleetPanelHeight - window?.innerHeight || 0}px start`, "end end"]
+    offset: ["start start", "end end"]
   })
 
   // Initial content animations
   const fleetOpacity = useTransform(entryProgress, [0, 0.5], [0, 1])
   const fleetY = useTransform(entryProgress, [0, 0.5], [50, 0])
   
+  // Calculate the proportion of scroll dedicated to vertical vs horizontal
+  const verticalProportion = verticalScrollAmount / (totalHeight - screenHeight)
+  const horizontalStart = verticalProportion
+  
   // Vertical scroll within fleet panel (content scrolls up)
-  const fleetScrollY = useTransform(verticalProgress, [0, 1], [0, -(fleetPanelHeight - (typeof window !== 'undefined' ? window.innerHeight : 800))])
+  const fleetScrollY = useTransform(
+    scrollYProgress, 
+    [0, horizontalStart], 
+    [0, -verticalScrollAmount]
+  )
   
   // Horizontal scroll movement (moves content left to reveal contact section)
-  const horizontalX = useTransform(horizontalProgress, [0, 0.9], [0, -screenWidth])
+  const horizontalX = useTransform(
+    scrollYProgress, 
+    [horizontalStart, 0.95], 
+    [0, -screenWidth]
+  )
   
   // Map parallax for contact section
-  const mapY = useTransform(horizontalProgress, [0, 1], ['-5%', '5%'])
-  const mapScale = useTransform(horizontalProgress, [0, 1], [1.1, 1.2])
-
-  // Total section height: fleet panel height + horizontal scroll distance + contact view time
-  const totalHeight = fleetPanelHeight + screenWidth + (typeof window !== 'undefined' ? window.innerHeight : 800)
+  const mapY = useTransform(scrollYProgress, [horizontalStart, 1], ['-5%', '5%'])
+  const mapScale = useTransform(scrollYProgress, [horizontalStart, 1], [1.1, 1.2])
 
   return (
     <section
@@ -398,8 +415,8 @@ export default function FleetContactSection({ cars }: FleetContactSectionProps) 
                 position: 'absolute',
                 inset: 0,
                 background: `
-                  linear-gradient(to bottom, var(--background) 0%, transparent 20%, transparent 80%, var(--background) 100%),
-                  linear-gradient(to right, var(--background) 0%, transparent 25%, transparent 75%, var(--background) 100%)
+                  linear-gradient(to bottom, var(--background) 0%, transparent 25%, transparent 75%, var(--background) 100%),
+                  linear-gradient(to right, var(--background) 0%, transparent 30%, transparent 70%, var(--background) 100%)
                 `,
                 pointerEvents: 'none',
                 zIndex: 2,
