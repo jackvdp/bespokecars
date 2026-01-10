@@ -97,7 +97,7 @@ export default function FleetSection({ cars }: FleetSectionProps) {
               style={{
                 position: 'relative',
                 borderRadius: '24px',
-                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                backgroundColor: 'rgba(20, 20, 20, 0.8)',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
                 overflow: 'hidden',
                 textDecoration: 'none',

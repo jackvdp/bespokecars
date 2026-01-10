@@ -43,7 +43,7 @@ export default function Card({
           position: 'relative',
           padding: '40px',
           borderRadius: '24px',
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
+          backgroundColor: 'rgba(20, 20, 20, 0.8)',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           overflow: 'hidden',
         }}
@@ -56,7 +56,7 @@ export default function Card({
           ease: [0.22, 1, 0.36, 1],
         }}
         whileHover={{
-          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          backgroundColor: 'rgba(30, 30, 30, 0.9)',
           borderColor: 'var(--primary)',
           transition: { duration: 0.3 },
         }}
@@ -72,12 +72,12 @@ export default function Card({
         position: 'relative',
         padding: '40px',
         borderRadius: '24px',
-        backgroundColor: 'rgba(255, 255, 255, 0.03)',
+        backgroundColor: 'rgba(20, 20, 20, 0.8)',
         border: '1px solid rgba(255, 255, 255, 0.08)',
         overflow: 'hidden',
       }}
       whileHover={{
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        backgroundColor: 'rgba(30, 30, 30, 0.9)',
         borderColor: 'var(--primary)',
         transition: { duration: 0.3 },
       }}
