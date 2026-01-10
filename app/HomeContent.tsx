@@ -55,12 +55,12 @@ export default function HomeContent({ cars }: HomeContentProps) {
       <ScrollVideo
         src="/videos/cars-optimised.mp4"
         textOverlays={heroOverlays}
-        scrollHeight="300vh"
+        scrollHeight="750vh"
       />
       <HowItWorks />
       <ScrollVideoSimple
         src="/videos/lambo-optimised.mp4"
-        scrollHeight="400vh"
+        scrollHeight="750vh"
       >
         {(scrollYProgress) => (
           <ServicesScrollContent scrollYProgress={scrollYProgress} />
