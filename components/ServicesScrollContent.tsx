@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useTransform, motion, MotionValue } from 'framer-motion'
 import PrimaryButton from './PrimaryButton'
 
@@ -76,17 +77,31 @@ interface ServicesScrollContentProps {
 }
 
 export default function ServicesScrollContent({ scrollYProgress }: ServicesScrollContentProps) {
-  // Calculate total width needed for all cards plus spacing
-  const cardWidth = 900
-  const cardGap = 60
-  const totalWidth = (serviceCards.length * cardWidth) + ((serviceCards.length - 1) * cardGap)
+  const [screenWidth, setScreenWidth] = useState(1200)
   
-  // Transform scroll progress to horizontal movement
-  // Start with first card centered, end with last card centered
+  useEffect(() => {
+    setScreenWidth(window.innerWidth)
+    const handleResize = () => setScreenWidth(window.innerWidth)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const cardWidth = 900
+  // Large gap so only one card visible at a time (full screen width between cards)
+  const cardGap = screenWidth
+  
+  // Total width of all cards and gaps
+  const totalCardsWidth = (serviceCards.length * cardWidth) + ((serviceCards.length - 1) * cardGap)
+  
+  // Start position: first card just off-screen to the right
+  const startX = screenWidth
+  // End position: last card just off-screen to the left
+  const endX = -totalCardsWidth
+  
   const x = useTransform(
     scrollYProgress,
     [0, 1],
-    [0, -totalWidth + cardWidth]
+    [startX, endX]
   )
 
   return (
@@ -103,12 +118,10 @@ export default function ServicesScrollContent({ scrollYProgress }: ServicesScrol
         style={{
           display: 'flex',
           gap: `${cardGap}px`,
-          paddingLeft: '50%',
-          paddingRight: '50%',
           x,
         }}
       >
-        {serviceCards.map((card, cardIndex) => (
+        {serviceCards.map((card) => (
           <motion.div
             key={card.heading}
             style={{
@@ -120,7 +133,6 @@ export default function ServicesScrollContent({ scrollYProgress }: ServicesScrol
               backgroundColor: 'rgba(0, 0, 0, 0.85)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               overflow: 'hidden',
-              transform: 'translateX(-50%)',
             }}
           >
             {/* Grid background inside card */}
