@@ -1,11 +1,11 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import {useEffect, useRef, useState} from 'react'
+import {motion, useScroll, useTransform} from 'framer-motion'
 import Image from 'next/image'
 import SectionBackground from './SectionBackground'
 import PrimaryButton from './PrimaryButton'
-import { contactInfo, mapEmbedUrl } from '@/lib/contactData'
+import {contactInfo, mapEmbedUrl} from '@/lib/contactData'
 
 interface Car {
   _id: string
@@ -48,7 +48,6 @@ export default function FleetContactSection({ cars }: FleetContactSectionProps) 
   
   // Calculate scroll amounts
   const verticalScrollAmount = Math.max(0, fleetPanelHeight - screenHeight)
-  const horizontalStartOffset = Math.max(0, verticalScrollAmount)
   
   // Total section height
   const totalHeight = fleetPanelHeight + screenWidth + screenHeight
@@ -70,8 +69,7 @@ export default function FleetContactSection({ cars }: FleetContactSectionProps) 
   const fleetY = useTransform(entryProgress, [0, 0.5], [50, 0])
   
   // Calculate the proportion of scroll dedicated to vertical vs horizontal
-  const verticalProportion = verticalScrollAmount / (totalHeight - screenHeight)
-  const horizontalStart = verticalProportion
+  const horizontalStart = verticalScrollAmount / (totalHeight - screenHeight)
   
   // Vertical scroll within fleet panel (content scrolls up)
   const fleetScrollY = useTransform(
