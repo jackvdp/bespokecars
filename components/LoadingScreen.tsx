@@ -28,8 +28,8 @@ export default function LoadingScreen({ isLoading }: LoadingScreenProps) {
     <AnimatePresence>
       {isLoading && (
         <motion.div
-          className="fixed inset-0 z-[9999] overflow-hidden"
-          style={{ backgroundColor: '#000000' }}
+          className="fixed inset-0 overflow-hidden"
+          style={{ backgroundColor: '#000000', zIndex: 99999, isolation: 'isolate' }}
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.05 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}

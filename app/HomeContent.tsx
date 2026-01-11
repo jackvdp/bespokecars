@@ -87,7 +87,7 @@ export default function HomeContent({ cars }: HomeContentProps) {
       </ScrollVideoSimple>
       <FleetContactSection cars={cars} />
       <Footer />
-      <LoadingScreen isLoading={!isFirstVideoLoaded} />
+      <LoadingScreen isLoading={true} />
     </main>
   );
 }
