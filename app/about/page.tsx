@@ -11,7 +11,7 @@ import PageHero from '@/components/PageHero'
 const whyChooseUsItems = [
   {
     title: 'Unmatched Experience',
-    description: 'With over 15 years in the luxury car rental industry, we understand that every occasion is unique. Our extensive experience has taught us to anticipate needs, exceed expectations, and deliver flawless service when it matters most.',
+    description: 'With over 25 years in the luxury car rental industry, we understand that every occasion is unique. Our extensive experience has taught us to anticipate needs, exceed expectations, and deliver flawless service when it matters most.',
     image: '/images/about/showroom.avif',
   },
   {
@@ -39,7 +39,7 @@ export default function AboutPage() {
       <PageHero
         label="About Us"
         title="Where Luxury Meets Your Most Important Moments"
-        description="For over 15 years, we've been creating unforgettable experiences through exceptional luxury car rentals and unparalleled service across the UK."
+        description="For over 25 years, we've been creating unforgettable experiences through exceptional luxury car rentals and unparalleled service across the UK."
         buttonText="Our Services"
         buttonHref="/#services"
         backgroundImage="/images/cars/ferrarilondon.jpeg"
