@@ -75,10 +75,10 @@ export default function ServicesPage() {
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           >
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-[var(--font-title)] font-semibold tracking-tight text-[var(--foreground)] mb-8">
-              We're here to help you
+              We&apos;re here to help you
             </h2>
             <p className="text-white/60 text-base md:text-lg leading-relaxed mb-6">
-              Whether you're planning a dream wedding, organising a photoshoot, or need a luxury vehicle for a special occasion, our experienced team is ready to make your vision a reality. Get in touch today.
+              Whether you&#39;re planning a dream wedding, organising a photoshoot, or need a luxury vehicle for a special occasion, our experienced team is ready to make your vision a reality. Get in touch today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <span className="text-[var(--primary)] text-sm font-medium tracking-[0.2em] uppercase">
@@ -185,7 +185,7 @@ export default function ServicesPage() {
               Ready to book a car or private service?
             </h2>
             <p className="text-white/60 text-base md:text-lg leading-relaxed mb-10 max-w-2xl mx-auto">
-              Book one of our luxury vehicles for your special day, arrange professional chauffeur services, or let us source that specific car you've been searching for through our extensive network.
+              Book one of our luxury vehicles for your special day, arrange professional chauffeur services, or let us source that specific car you&apos;ve been searching for through our extensive network.
             </p>
             <PrimaryButton href="/contact" size="large">
               Contact Us

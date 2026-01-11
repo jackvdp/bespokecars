@@ -147,13 +147,13 @@ export default function AboutPage() {
             transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
             <p>
-              At the heart of our business is an unwavering commitment to excellence. We believe that luxury isn't just about the vehicles we provide – it's about the entire experience we create for our clients.
+              At the heart of our business is an unwavering commitment to excellence. We believe that luxury isn&#39;t just about the vehicles we provide – it&#39;s about the entire experience we create for our clients.
             </p>
             <p>
-              Every interaction, from your initial inquiry to the moment you return your vehicle, is handled with the utmost care and professionalism. We understand that we're not just renting cars; we're helping create memories that will last a lifetime.
+              Every interaction, from your initial inquiry to the moment you return your vehicle, is handled with the utmost care and professionalism. We understand that we&#39;re not just renting cars; we&#39;re helping create memories that will last a lifetime.
             </p>
             <p>
-              Whether you're planning your dream wedding, organizing a corporate event, or embarking on a creative project, we're here to ensure that your transportation is one less thing to worry about – and one more reason to celebrate.
+              Whether you&#39;re planning your dream wedding, organizing a corporate event, or embarking on a creative project, we&#39;re here to ensure that your transportation is one less thing to worry about – and one more reason to celebrate.
             </p>
           </motion.div>
         </div>
@@ -174,7 +174,7 @@ export default function AboutPage() {
               Ready to book a car or private service?
             </h2>
             <p className="text-white/60 text-base md:text-lg leading-relaxed mb-10 max-w-2xl mx-auto">
-              Book one of our luxury vehicles for your special day, arrange professional chauffeur services, or let us source that specific car you've been searching for through our extensive network.
+              Book one of our luxury vehicles for your special day, arrange professional chauffeur services, or let us source that specific car you&#39;ve been searching for through our extensive network.
             </p>
             <PrimaryButton href="/contact" size="large">
               Contact Us
