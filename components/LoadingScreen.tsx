@@ -10,49 +10,47 @@ interface LoadingScreenProps {
 export default function LoadingScreen({ isLoading }: LoadingScreenProps) {
   const [progress, setProgress] = useState(0)
   const [shouldShow, setShouldShow] = useState(true)
-  const [isComplete, setIsComplete] = useState(false)
 
-  // Handle progress animation
+  // Handle progress animation while loading
   useEffect(() => {
-    if (isLoading && !isComplete) {
-      // Animate progress up to 90% while loading
-      const interval = setInterval(() => {
-        setProgress(prev => {
-          if (prev >= 90) return 90
-          return prev + Math.random() * 15
-        })
-      }, 200)
-      return () => clearInterval(interval)
-    } else if (!isLoading && !isComplete) {
-      // Loading finished - animate to 100%
-      setIsComplete(true)
+    if (!isLoading) return
 
-      // Quickly animate to 100%
-      const animateToComplete = () => {
-        setProgress(prev => {
-          if (prev >= 100) return 100
-          return Math.min(100, prev + 5)
-        })
-      }
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 90) return 90
+        return prev + Math.random() * 15
+      })
+    }, 200)
 
-      const interval = setInterval(animateToComplete, 30)
+    return () => clearInterval(interval)
+  }, [isLoading])
 
-      // After reaching 100%, wait a moment then dismiss
-      const dismissTimeout = setTimeout(() => {
-        clearInterval(interval)
-        setProgress(100)
-        // Brief pause at 100% before dismissing
-        setTimeout(() => {
-          setShouldShow(false)
-        }, 400)
-      }, 300)
+  // Handle completion when loading finishes
+  useEffect(() => {
+    if (isLoading) return
 
-      return () => {
-        clearInterval(interval)
-        clearTimeout(dismissTimeout)
-      }
+    // Quickly animate to 100%
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) return 100
+        return Math.min(100, prev + 5)
+      })
+    }, 30)
+
+    // Dismiss after animation completes
+    const dismissTimeout = setTimeout(() => {
+      clearInterval(interval)
+      setProgress(100)
+      setTimeout(() => {
+        setShouldShow(false)
+      }, 400)
+    }, 300)
+
+    return () => {
+      clearInterval(interval)
+      clearTimeout(dismissTimeout)
     }
-  }, [isLoading, isComplete])
+  }, [isLoading])
 
   return (
     <AnimatePresence>
