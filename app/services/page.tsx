@@ -5,46 +5,45 @@ import Image from 'next/image'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import PrimaryButton from '@/components/PrimaryButton'
-import SecondaryButton from '@/components/SecondaryButton'
 import SectionBackground from '@/components/SectionBackground'
 import PageHero from '@/components/PageHero'
 
 const services = [
   {
+    id: 'wedding',
     title: 'Wedding Car Hire',
     description: "Make your special day unforgettable with our curated collection of luxury wedding cars. With over 10,000 successful weddings completed, we're the UK's most trusted wedding car specialists, ensuring your arrival is as perfect as your celebration.",
     image: '/images/services/wedding.avif',
-    href: '/services/wedding',
   },
   {
+    id: 'photoshoot',
     title: 'Photoshoot & Film Hire',
     description: 'Elevate your creative projects with our stunning supercar and luxury vehicle collection. Perfect for high-end photoshoots, commercials, and film productions. Our 15+ years of industry experience ensures seamless service for any creative vision.',
     image: '/images/services/photoshoot.avif',
-    href: '/services/photoshoot',
   },
   {
+    id: 'limousine',
     title: 'Limousine Service',
     description: 'Arrive in ultimate style with our premium limousine service. Perfect for hen and stag parties, prom nights, group celebrations, and special occasions where you want to make a grand entrance. Spacious luxury interiors and professional service for unforgettable group experiences.',
     image: '/images/services/limousine.avif',
-    href: '/services/limousine',
   },
   {
+    id: 'self-drive',
     title: 'Self Drive Experience',
     description: "Indulge in the ultimate driving experience with our premium self-drive rentals. Whether it's a weekend adventure or an extended journey, experience luxury and performance as you explore London and beyond in style.",
     image: '/images/services/selfdrive.jpg',
-    href: '/services/self-drive',
   },
   {
+    id: 'corporate',
     title: 'Corporate & Event Hire',
     description: 'Enhance your corporate image with our prestigious vehicle collection. Perfect for executive transportation, marketing campaigns, product launches, and VIP events. Custom branding and decal application available for maximum impact.',
     image: '/images/services/corporate.avif',
-    href: '/services/corporate',
   },
   {
+    id: 'chauffeur',
     title: 'Private Chauffeur Services',
     description: 'Experience true luxury with our professional chauffeur service. Our expertly trained drivers provide discreet, reliable transportation for business meetings, special occasions, and VIP experiences. Sit back and enjoy the journey while we handle every detail.',
     image: '/images/services/chauffer.avif',
-    href: '/services/chauffeur',
   },
 ]
 
@@ -101,8 +100,9 @@ export default function ServicesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {services.map((service, index) => (
               <motion.div
-                key={service.title}
-                className="group relative rounded-3xl overflow-hidden bg-white/[0.03] border border-white/[0.08] hover:border-[var(--primary)] transition-colors duration-300"
+                key={service.id}
+                id={service.id}
+                className="group relative rounded-3xl overflow-hidden bg-white/[0.03] border border-white/[0.08] hover:border-[var(--primary)] transition-colors duration-300 scroll-mt-24"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-50px' }}
@@ -128,12 +128,9 @@ export default function ServicesPage() {
                   <h3 className="text-xl md:text-2xl font-[var(--font-title)] font-semibold tracking-tight text-[var(--foreground)] mb-4">
                     {service.title}
                   </h3>
-                  <p className="text-white/50 text-sm md:text-base leading-relaxed mb-6">
+                  <p className="text-white/50 text-sm md:text-base leading-relaxed">
                     {service.description}
                   </p>
-                  <SecondaryButton href={service.href} size="small">
-                    Our Service
-                  </SecondaryButton>
                 </div>
 
                 {/* Accent line */}

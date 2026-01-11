@@ -16,10 +16,10 @@ const footerLinks = [
   {
     title: 'Services',
     links: [
-      { label: 'Wedding Hire', href: '/services/wedding' },
-      { label: 'Corporate Events', href: '/services/corporate' },
-      { label: 'Chauffeur', href: '/services/chauffeur' },
-      { label: 'Film & Photoshoots', href: '/services/film' },
+      { label: 'Wedding Hire', href: '/services#wedding' },
+      { label: 'Corporate Events', href: '/services#corporate' },
+      { label: 'Chauffeur', href: '/services#chauffeur' },
+      { label: 'Film & Photoshoots', href: '/services#photoshoot' },
     ],
   },
   {
