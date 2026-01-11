@@ -112,7 +112,7 @@ export default function AboutPage() {
       {/* Driver Banner */}
       <section className="relative h-[50vh] md:h-[60vh]">
         <Image
-          src="/images/about/driver"
+          src="/images/about/driver.avif"
           alt="Professional chauffeur"
           fill
           className="object-cover"
