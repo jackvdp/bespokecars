@@ -8,13 +8,17 @@ interface PrimaryButtonProps {
   href?: string
   onClick?: () => void
   size?: 'small' | 'medium' | 'large'
+  type?: 'button' | 'submit' | 'reset'
+  disabled?: boolean
 }
 
-export default function PrimaryButton({ 
-  children, 
-  href, 
+export default function PrimaryButton({
+  children,
+  href,
   onClick,
-  size = 'medium'
+  size = 'medium',
+  type = 'button',
+  disabled = false,
 }: PrimaryButtonProps) {
   const sizeStyles = {
     small: {
@@ -70,10 +74,16 @@ export default function PrimaryButton({
 
   return (
     <motion.button
+      type={type}
       onClick={onClick}
-      style={style}
-      whileHover={hoverAnimation}
-      whileTap={tapAnimation}
+      disabled={disabled}
+      style={{
+        ...style,
+        opacity: disabled ? 0.6 : 1,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+      }}
+      whileHover={disabled ? {} : hoverAnimation}
+      whileTap={disabled ? {} : tapAnimation}
       transition={{ duration: 0.2 }}
     >
       {children}
