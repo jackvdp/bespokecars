@@ -7,6 +7,13 @@ import Footer from '@/components/Footer'
 import SectionBackground from '@/components/SectionBackground'
 import CarCard, { Car } from '@/components/CarCard'
 import PrimaryButton from '@/components/PrimaryButton'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
 
 interface Category {
   _id: string
@@ -21,6 +28,35 @@ interface CarsContentProps {
 
 export default function CarsContent({ cars, categories }: CarsContentProps) {
   const [activeFilter, setActiveFilter] = useState<string>('all')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setFormStatus('submitting')
+
+    const form = e.currentTarget
+    const formData = new FormData(form)
+
+    try {
+      const response = await fetch('https://formspree.io/f/mjggbqnq', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Accept: 'application/json',
+        },
+      })
+
+      if (response.ok) {
+        setFormStatus('success')
+        form.reset()
+      } else {
+        setFormStatus('error')
+      }
+    } catch {
+      setFormStatus('error')
+    }
+  }
 
   // Filter buttons - All + specific categories
   const filterOptions = [
@@ -63,7 +99,7 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
             <p className="text-white/60 text-lg max-w-2xl mx-auto mb-8">
               Can&apos;t find what you&apos;re looking for? Our extensive partner network can source it for you.
             </p>
-            <PrimaryButton href="/contact" size="medium">
+            <PrimaryButton onClick={() => setModalOpen(true)} size="medium">
               Special Request
             </PrimaryButton>
           </motion.div>
@@ -114,7 +150,7 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
               <p className="text-white/60 text-lg mb-6">
                 No cars found in this category.
               </p>
-              <PrimaryButton href="/contact" size="medium">
+              <PrimaryButton onClick={() => setModalOpen(true)} size="medium">
                 Request This Category
               </PrimaryButton>
             </motion.div>
@@ -123,6 +159,98 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
       </section>
 
       <Footer />
+
+      {/* Special Request Modal */}
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent className="bg-[var(--background)] border-white/10 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-[var(--foreground)] text-2xl font-[var(--font-title)]">
+              Special Request
+            </DialogTitle>
+            <DialogDescription className="text-white/60">
+              Can&apos;t find what you&apos;re looking for? Tell us what you need and we&apos;ll source it for you.
+            </DialogDescription>
+          </DialogHeader>
+
+          {formStatus === 'success' ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[var(--primary)]/20 flex items-center justify-center">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <h4 className="text-xl font-[var(--font-title)] font-semibold text-[var(--foreground)] mb-2">
+                Request Sent!
+              </h4>
+              <p className="text-white/60 text-sm">
+                Thank you for your request. We&apos;ll get back to you shortly.
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
+              <input type="hidden" name="form_type" value="special_request" />
+
+              <div>
+                <label htmlFor="name" className="block text-white/60 text-sm mb-2">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                  className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.1] text-[var(--foreground)] placeholder-white/30 focus:outline-none focus:border-[var(--primary)] transition-colors"
+                  placeholder="Your name"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="email" className="block text-white/60 text-sm mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.1] text-[var(--foreground)] placeholder-white/30 focus:outline-none focus:border-[var(--primary)] transition-colors"
+                  placeholder="your@email.com"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="car_request" className="block text-white/60 text-sm mb-2">
+                  What car are you looking for?
+                </label>
+                <textarea
+                  id="car_request"
+                  name="car_request"
+                  required
+                  rows={3}
+                  className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.1] text-[var(--foreground)] placeholder-white/30 focus:outline-none focus:border-[var(--primary)] transition-colors resize-none"
+                  placeholder="e.g. Ferrari 488 Spider, Rolls Royce Phantom..."
+                />
+              </div>
+
+              {formStatus === 'error' && (
+                <p className="text-red-400 text-sm">
+                  Something went wrong. Please try again.
+                </p>
+              )}
+
+              <div className="pt-2">
+                <PrimaryButton
+                  type="submit"
+                  size="medium"
+                  disabled={formStatus === 'submitting'}
+                >
+                  {formStatus === 'submitting' ? 'Sending...' : 'Submit Request'}
+                </PrimaryButton>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </main>
   )
 }
