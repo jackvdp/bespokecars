@@ -74,15 +74,60 @@ export default function PageHero({
         </div>
       </div>
 
+      {/* Scroll indicator - Mouse */}
+      <motion.div
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 cursor-pointer z-20"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.8 }}
+        onClick={onButtonClick}
+        whileHover={{ scale: 1.1 }}
+      >
+        <svg
+          width="40"
+          height="64"
+          viewBox="0 0 40 64"
+          fill="none"
+          style={{ filter: 'drop-shadow(0 0 10px var(--primary))' }}
+        >
+          {/* Mouse body */}
+          <rect
+            x="2"
+            y="2"
+            width="36"
+            height="60"
+            rx="18"
+            stroke="var(--primary)"
+            strokeWidth="2.5"
+            fill="none"
+          />
+          {/* Scroll wheel - animated */}
+          <motion.rect
+            x="17"
+            y="14"
+            width="6"
+            height="12"
+            rx="3"
+            fill="var(--primary)"
+            animate={{ y: [14, 26, 14], opacity: [1, 0.3, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        </svg>
+      </motion.div>
+
       {/* Background - Map or Image */}
-      <div className="absolute bottom-0 left-0 right-0 h-[60vh]">
+      <div className="absolute bottom-0 left-0 right-0 h-[60vh] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-black/50 to-transparent z-10" />
         {mapUrl ? (
           <iframe
             src={mapUrl}
-            className="w-full h-full border-0 pointer-events-none"
+            className="absolute border-0 pointer-events-none"
             style={{
-              filter: 'grayscale(100%) brightness(0.4) contrast(1.2)',
+              filter: 'brightness(0.7) contrast(1.1) saturate(0.8)',
+              width: '100%',
+              height: '100%',
+              top: '15%',
+              left: 0,
             }}
             allowFullScreen={false}
             loading="lazy"
