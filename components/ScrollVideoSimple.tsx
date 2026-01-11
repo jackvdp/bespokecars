@@ -1,7 +1,7 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
-import { useScroll, useTransform, MotionValue } from 'framer-motion'
+import { useRef, useEffect, useState, useCallback } from 'react'
+import { useScroll, MotionValue } from 'framer-motion'
 
 interface ScrollVideoSimpleProps {
   src: string
@@ -17,40 +17,86 @@ export default function ScrollVideoSimple({
   const containerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isVideoReady, setIsVideoReady] = useState(false)
+  const videoDurationRef = useRef(0)
 
-  // Video timeline: plays while any part of component is in view
-  const { scrollYProgress: videoProgress } = useScroll({
-    target: containerRef,
-    offset: ['start end', 'end start'],
-  })
-
-  // Content timeline: only when sticky container is fully in view
+  // Content timeline: only when sticky container is fully in view (for children)
   const { scrollYProgress: contentProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end end'],
   })
 
-  // Sync video playback with the longer video timeline
+  // Handle video ready
   useEffect(() => {
     const video = videoRef.current
-    if (!video || !isVideoReady) return
+    if (!video) return
 
-    const unsubscribe = videoProgress.on('change', (progress) => {
-      if (video.duration) {
-        video.currentTime = progress * video.duration
-      }
-    })
-
-    return () => unsubscribe()
-  }, [videoProgress, isVideoReady])
-
-  const handleVideoReady = () => {
-    const video = videoRef.current
-    if (video) {
+    const handleLoadedMetadata = () => {
+      videoDurationRef.current = video.duration
       video.pause()
+      video.currentTime = 0
       setIsVideoReady(true)
     }
-  }
+
+    video.addEventListener('loadedmetadata', handleLoadedMetadata)
+    
+    // Check if already loaded
+    if (video.readyState >= 2) {
+      handleLoadedMetadata()
+    }
+
+    return () => {
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata)
+    }
+  }, [])
+
+  // Manual scroll handler for video sync (more reliable than Framer Motion's onChange)
+  useEffect(() => {
+    if (!isVideoReady) return
+
+    let rafId: number
+
+    const updateVideoFrame = () => {
+      const video = videoRef.current
+      const container = containerRef.current
+      if (!video || !container || !videoDurationRef.current) return
+
+      const rect = container.getBoundingClientRect()
+      const containerHeight = container.offsetHeight
+      const viewportHeight = window.innerHeight
+      
+      // Video timeline: plays while any part of container is visible
+      // Starts when top of container hits bottom of viewport
+      // Ends when bottom of container leaves top of viewport
+      const totalVideoScrollDistance = containerHeight + viewportHeight
+      const videoScrolled = viewportHeight - rect.top
+      const videoProgress = Math.min(Math.max(videoScrolled / totalVideoScrollDistance, 0), 1)
+      
+      // Update video time
+      const targetTime = videoProgress * videoDurationRef.current
+      if (!isNaN(targetTime) && isFinite(targetTime)) {
+        video.currentTime = targetTime
+      }
+    }
+
+    const handleScroll = () => {
+      cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(updateVideoFrame)
+    }
+
+    // Use the body as scroll container since that's where scroll is now
+    const scrollContainer = document.body
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    
+    // Initial update
+    updateVideoFrame()
+
+    return () => {
+      scrollContainer.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('scroll', handleScroll)
+      cancelAnimationFrame(rafId)
+    }
+  }, [isVideoReady])
 
   return (
     <div
@@ -77,8 +123,6 @@ export default function ScrollVideoSimple({
           muted
           playsInline
           preload="auto"
-          onLoadedMetadata={handleVideoReady}
-          onCanPlay={handleVideoReady}
           style={{
             position: 'absolute',
             top: '50%',
