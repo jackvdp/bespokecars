@@ -8,6 +8,7 @@ import PageHero from '@/components/PageHero'
 import PrimaryButton from '@/components/PrimaryButton'
 import SectionBackground from '@/components/SectionBackground'
 import { contactInfo, mapEmbedUrl } from '@/lib/contactData'
+import { serviceOptions } from '@/lib/services'
 
 export default function ContactPage() {
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
@@ -218,14 +219,11 @@ export default function ContactPage() {
                         backgroundSize: '20px',
                       }}
                     >
-                      <option value="">Select a service</option>
-                      <option value="wedding">Wedding Car Hire</option>
-                      <option value="photoshoot">Photoshoot & Film Hire</option>
-                      <option value="limousine">Limousine Service</option>
-                      <option value="self-drive">Self Drive Experience</option>
-                      <option value="corporate">Corporate & Event Hire</option>
-                      <option value="chauffeur">Private Chauffeur Services</option>
-                      <option value="other">Other</option>
+                      {serviceOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
                     </select>
                   </div>
 

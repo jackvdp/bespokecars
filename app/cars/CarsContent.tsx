@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog'
+import { serviceOptions } from '@/lib/services'
 
 interface Category {
   _id: string
@@ -65,6 +66,7 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
     { id: '4x4', label: '4x4' },
     { id: 'luxury', label: 'Luxury' },
     { id: 'hypercar', label: 'Hypercar' },
+    { id: 'limousine', label: 'Limousine' },
   ]
 
   // Filter cars based on active filter
@@ -216,6 +218,42 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
                   className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.1] text-[var(--foreground)] placeholder-white/30 focus:outline-none focus:border-[var(--primary)] transition-colors"
                   placeholder="your@email.com"
                 />
+              </div>
+
+              <div>
+                <label htmlFor="phone" className="block text-white/60 text-sm mb-2">
+                  Phone (optional)
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.1] text-[var(--foreground)] placeholder-white/30 focus:outline-none focus:border-[var(--primary)] transition-colors"
+                  placeholder="+44 (0) 123 456 7890"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="service" className="block text-white/60 text-sm mb-2">
+                  Service Interest
+                </label>
+                <select
+                  id="service"
+                  name="service"
+                  className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.1] text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] transition-colors appearance-none cursor-pointer"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'right 12px center',
+                    backgroundSize: '20px',
+                  }}
+                >
+                  {serviceOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>
