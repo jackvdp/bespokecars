@@ -379,7 +379,7 @@ export default function FleetContactSection({ cars }: FleetContactSectionProps) 
                 position: 'absolute',
                 top: '-10%',
                 bottom: '-10%',
-                left: 0,
+                left: '10%',
                 right: '-10%',
                 zIndex: 0,
                 y: mapY,
