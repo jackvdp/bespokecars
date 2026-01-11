@@ -222,7 +222,7 @@ export default function ServicesScrollContent({ scrollYProgress }: ServicesScrol
                     style={{
                       padding: '24px',
                       borderRadius: '16px',
-                      backgroundColor: '#1a1a1a',
+                      backgroundColor: 'var(--card-surface)',
                       border: '1px solid rgba(255, 255, 255, 0.06)',
                     }}
                   >

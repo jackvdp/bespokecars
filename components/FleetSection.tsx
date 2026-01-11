@@ -1,18 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import Image from 'next/image'
 import SectionBackground from './SectionBackground'
 import PrimaryButton from './PrimaryButton'
-
-interface Car {
-  _id: string
-  name: string
-  slug: { current: string }
-  category: { title: string } | null
-  logoUrl: string | null
-  imageUrls: string[] | null
-}
+import CarCard, { Car } from './CarCard'
 
 interface FleetSectionProps {
   cars: Car[]
@@ -91,127 +82,7 @@ export default function FleetSection({ cars }: FleetSectionProps) {
           }}
         >
           {cars.map((car, index) => (
-            <motion.a
-              key={car._id}
-              href={`/cars/${car.slug.current}`}
-              style={{
-                position: 'relative',
-                borderRadius: '24px',
-                backgroundColor: 'rgba(20, 20, 20, 0.8)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                overflow: 'hidden',
-                textDecoration: 'none',
-                cursor: 'pointer',
-              }}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{
-                duration: 0.6,
-                delay: index * 0.1,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              whileHover={{
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                borderColor: 'var(--primary)',
-                transition: { duration: 0.3 },
-              }}
-            >
-              {/* Car Image */}
-              <div
-                style={{
-                  position: 'relative',
-                  width: '100%',
-                  aspectRatio: '16 / 10',
-                  backgroundColor: '#1a1a1a',
-                  overflow: 'hidden',
-                }}
-              >
-                {car.imageUrls && car.imageUrls[0] ? (
-                  <Image
-                    src={car.imageUrls[0]}
-                    alt={car.name}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'rgba(255, 255, 255, 0.3)',
-                      fontSize: '14px',
-                      fontFamily: 'var(--font-body)',
-                    }}
-                  >
-                    No image
-                  </div>
-                )}
-              </div>
-
-              {/* Car Info */}
-              <div
-                style={{
-                  padding: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '16px',
-                }}
-              >
-                {/* Brand Logo */}
-                {car.logoUrl && (
-                  <div
-                    style={{
-                      position: 'relative',
-                      width: '44px',
-                      height: '44px',
-                      flexShrink: 0,
-                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                      borderRadius: '10px',
-                      padding: '6px',
-                    }}
-                  >
-                    <Image
-                      src={car.logoUrl}
-                      alt=""
-                      fill
-                      style={{ objectFit: 'contain', padding: '6px' }}
-                    />
-                  </div>
-                )}
-
-                {/* Name and Category */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <h3
-                    style={{
-                      color: 'var(--foreground)',
-                      fontSize: '18px',
-                      fontWeight: 600,
-                      fontFamily: 'var(--font-title)',
-                      marginBottom: '4px',
-                      letterSpacing: '-0.01em',
-                    }}
-                  >
-                    {car.name}
-                  </h3>
-                  {car.category && (
-                    <p
-                      style={{
-                        color: 'var(--primary)',
-                        fontSize: '14px',
-                        fontFamily: 'var(--font-body)',
-                        fontWeight: 500,
-                      }}
-                    >
-                      {car.category.title}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </motion.a>
+            <CarCard key={car._id} car={car} index={index} />
           ))}
         </div>
 

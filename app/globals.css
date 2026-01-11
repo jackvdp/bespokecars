@@ -38,6 +38,8 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-card-surface: var(--card-surface);
+  --color-card-surface-hover: var(--card-surface-hover);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -59,6 +61,9 @@
   --foreground: oklch(1 0 0);
   --card: oklch(0.1 0 0);
   --card-foreground: oklch(1 0 0);
+  /* Card surface colors */
+  --card-surface: oklch(0.18 0 0);
+  --card-surface-hover: oklch(0.22 0 0);
   --popover: oklch(0.1 0 0);
   --popover-foreground: oklch(1 0 0);
   /* Primary is neon cyan */
@@ -103,6 +108,8 @@
   --foreground: oklch(1 0 0);
   --card: oklch(0.1 0 0);
   --card-foreground: oklch(1 0 0);
+  --card-surface: oklch(0.18 0 0);
+  --card-surface-hover: oklch(0.22 0 0);
   --popover: oklch(0.1 0 0);
   --popover-foreground: oklch(1 0 0);
   --primary: oklch(0.85 0.2 195);
