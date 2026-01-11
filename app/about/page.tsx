@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import PrimaryButton from '@/components/PrimaryButton'
 import SectionBackground from '@/components/SectionBackground'
+import PageHero from '@/components/PageHero'
 
 const whyChooseUsItems = [
   {
@@ -35,59 +36,15 @@ export default function AboutPage() {
     <main className="bg-[var(--background)]">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen">
-        {/* Black background with content */}
-        <div className="relative z-10 pt-32 pb-48 px-6">
-          <div className="max-w-[1200px] mx-auto text-center">
-            <motion.span
-              className="text-[var(--primary)] text-sm font-medium tracking-[0.2em] uppercase mb-6 block"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            >
-              About Us
-            </motion.span>
-            <motion.h1
-              className="text-4xl md:text-5xl lg:text-6xl font-[var(--font-title)] font-semibold tracking-tight text-[var(--foreground)] mb-8"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            >
-              Where Luxury Meets Your Most Important Moments
-            </motion.h1>
-            <motion.p
-              className="text-white/60 text-lg md:text-xl max-w-3xl mx-auto mb-10 leading-relaxed"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            >
-              For over 15 years, we've been creating unforgettable experiences through exceptional luxury car rentals and unparalleled service across the UK.
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <PrimaryButton href="/#services" size="large">
-                Our Services
-              </PrimaryButton>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Gradient fade to image */}
-        <div className="absolute bottom-0 left-0 right-0 h-[60vh]">
-          <div className="absolute inset-0 bg-gradient-to-b from-black via-black/50 to-transparent z-10" />
-          <Image
-            src="/images/cars/ferrarilondon.jpeg"
-            alt="Ferrari in London"
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-      </section>
+      <PageHero
+        label="About Us"
+        title="Where Luxury Meets Your Most Important Moments"
+        description="For over 15 years, we've been creating unforgettable experiences through exceptional luxury car rentals and unparalleled service across the UK."
+        buttonText="Our Services"
+        buttonHref="/#services"
+        backgroundImage="/images/cars/ferrarilondon.jpeg"
+        backgroundAlt="Ferrari in London"
+      />
 
       {/* Why Choose Us Section */}
       <section className="relative py-[120px] px-6">
