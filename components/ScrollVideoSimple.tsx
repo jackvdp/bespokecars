@@ -7,16 +7,21 @@ interface ScrollVideoSimpleProps {
   src: string
   scrollHeight?: string
   children?: React.ReactNode | ((scrollYProgress: MotionValue<number>) => React.ReactNode)
+  lazy?: boolean
+  onLoadStart?: () => void
 }
 
 export default function ScrollVideoSimple({ 
   src, 
   scrollHeight = '300vh',
-  children 
+  children,
+  lazy = false,
+  onLoadStart
 }: ScrollVideoSimpleProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isVideoReady, setIsVideoReady] = useState(false)
+  const [shouldLoad, setShouldLoad] = useState(!lazy)
   const videoDurationRef = useRef(0)
 
   // Content timeline: only when sticky container is fully in view (for children)
@@ -25,8 +30,18 @@ export default function ScrollVideoSimple({
     offset: ['start start', 'end end'],
   })
 
+  // Trigger lazy load when ready
+  useEffect(() => {
+    if (lazy && !shouldLoad) {
+      onLoadStart?.()
+      setShouldLoad(true)
+    }
+  }, [lazy, shouldLoad, onLoadStart])
+
   // Handle video ready
   useEffect(() => {
+    if (!shouldLoad) return
+    
     const video = videoRef.current
     if (!video) return
 
@@ -47,7 +62,7 @@ export default function ScrollVideoSimple({
     return () => {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata)
     }
-  }, [])
+  }, [shouldLoad])
 
   // Manual scroll handler for video sync (more reliable than Framer Motion's onChange)
   useEffect(() => {
@@ -117,12 +132,13 @@ export default function ScrollVideoSimple({
         }}
       >
         {/* Video */}
-        <video
-          ref={videoRef}
-          src={src}
-          muted
-          playsInline
-          preload="auto"
+        {shouldLoad && (
+          <video
+            ref={videoRef}
+            src={src}
+            muted
+            playsInline
+            preload="auto"
           style={{
             position: 'absolute',
             top: '50%',
@@ -134,7 +150,8 @@ export default function ScrollVideoSimple({
             height: 'auto',
             objectFit: 'cover',
           }}
-        />
+          />
+        )}
 
         {/* Dark overlay */}
         <div

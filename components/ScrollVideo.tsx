@@ -18,6 +18,8 @@ interface ScrollVideoProps {
   overlayGradient?: boolean
   customOverlay?: (activeIndex: number, progress: number) => React.ReactNode
   contentFadeIn?: number
+  priority?: boolean
+  onLoadComplete?: () => void
 }
 
 export default function ScrollVideo({ 
@@ -27,7 +29,9 @@ export default function ScrollVideo({
   showScrollIndicator = true,
   overlayGradient = true,
   customOverlay,
-  contentFadeIn = 0
+  contentFadeIn = 0,
+  priority = false,
+  onLoadComplete
 }: ScrollVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -49,6 +53,7 @@ export default function ScrollVideo({
       setIsLoaded(true)
       video.pause()
       video.currentTime = 0
+      onLoadComplete?.()
     }
 
     video.addEventListener('loadedmetadata', handleLoadedMetadata)
@@ -60,7 +65,7 @@ export default function ScrollVideo({
     return () => {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata)
     }
-  }, [])
+  }, [onLoadComplete])
 
   const getActiveOverlayIndex = useCallback((progress: number) => {
     for (let i = textOverlays.length - 1; i >= 0; i--) {
@@ -193,7 +198,7 @@ export default function ScrollVideo({
             className="h-full w-full object-cover"
             muted
             playsInline
-            preload="auto"
+            preload={priority ? "auto" : "metadata"}
             src={src}
           >
             Your browser does not support the video tag.

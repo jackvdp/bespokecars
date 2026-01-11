@@ -1,8 +1,10 @@
 'use client'
 
+import { useState, useCallback } from "react";
 import ScrollVideo, { TextOverlay } from "@/components/ScrollVideo";
 import ScrollVideoSimple from "@/components/ScrollVideoSimple";
 import ServicesScrollContent from "@/components/ServicesScrollContent";
+import LoadingScreen from "@/components/LoadingScreen";
 import Navbar from "@/components/Navbar";
 import HowItWorks from "@/components/HowItWorks";
 import FleetContactSection from "@/components/FleetContactSection";
@@ -49,6 +51,19 @@ const heroOverlays: TextOverlay[] = [
 ];
 
 export default function HomeContent({ cars }: HomeContentProps) {
+  const [isFirstVideoLoaded, setIsFirstVideoLoaded] = useState(false);
+  const [isSecondVideoStarted, setIsSecondVideoStarted] = useState(false);
+
+  const handleFirstVideoLoad = useCallback(() => {
+    setIsFirstVideoLoaded(true);
+    // Start loading second video immediately after first is ready
+    setIsSecondVideoStarted(true);
+  }, []);
+
+  const handleSecondVideoStart = useCallback(() => {
+    console.log('Second video started loading');
+  }, []);
+
   return (
     <main>
       <Navbar />
@@ -56,11 +71,15 @@ export default function HomeContent({ cars }: HomeContentProps) {
         src="/videos/cars-optimised.mp4"
         textOverlays={heroOverlays}
         scrollHeight="750vh"
+        priority={true}
+        onLoadComplete={handleFirstVideoLoad}
       />
       <HowItWorks />
       <ScrollVideoSimple
         src="/videos/lambo-optimised.mp4"
         scrollHeight="750vh"
+        lazy={!isSecondVideoStarted}
+        onLoadStart={handleSecondVideoStart}
       >
         {(scrollYProgress) => (
           <ServicesScrollContent scrollYProgress={scrollYProgress} />
@@ -68,6 +87,7 @@ export default function HomeContent({ cars }: HomeContentProps) {
       </ScrollVideoSimple>
       <FleetContactSection cars={cars} />
       <Footer />
+      <LoadingScreen isLoading={!isFirstVideoLoaded} />
     </main>
   );
 }
