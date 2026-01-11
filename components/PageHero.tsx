@@ -14,6 +14,7 @@ interface PageHeroProps {
   backgroundImage?: string
   backgroundAlt?: string
   mapUrl?: string
+  logoUrl?: string
 }
 
 export default function PageHero({
@@ -26,12 +27,31 @@ export default function PageHero({
   backgroundImage,
   backgroundAlt = 'Hero background',
   mapUrl,
+  logoUrl,
 }: PageHeroProps) {
   return (
     <section className="relative min-h-screen">
       {/* Black background with content */}
       <div className="relative z-20 pt-32 pb-48 px-6">
         <div className="max-w-[1200px] mx-auto text-center">
+          {/* Logo */}
+          {logoUrl && (
+            <motion.div
+              className="mx-auto mb-8 w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-lg"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="relative w-16 h-16">
+                <Image
+                  src={logoUrl}
+                  alt=""
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </motion.div>
+          )}
           <motion.span
             className="text-[var(--primary)] text-sm font-medium tracking-[0.2em] uppercase mb-6 block"
             initial={{ opacity: 0, y: 20 }}
