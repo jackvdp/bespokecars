@@ -9,9 +9,11 @@ interface PageHeroProps {
   title: string
   description: string
   buttonText: string
-  buttonHref: string
-  backgroundImage: string
+  buttonHref?: string
+  onButtonClick?: () => void
+  backgroundImage?: string
   backgroundAlt?: string
+  mapUrl?: string
 }
 
 export default function PageHero({
@@ -20,8 +22,10 @@ export default function PageHero({
   description,
   buttonText,
   buttonHref,
+  onButtonClick,
   backgroundImage,
   backgroundAlt = 'Hero background',
+  mapUrl,
 }: PageHeroProps) {
   return (
     <section className="relative min-h-screen">
@@ -57,23 +61,43 @@ export default function PageHero({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
           >
-            <PrimaryButton href={buttonHref} size="large">
-              {buttonText}
-            </PrimaryButton>
+            {onButtonClick ? (
+              <PrimaryButton onClick={onButtonClick} size="large">
+                {buttonText}
+              </PrimaryButton>
+            ) : (
+              <PrimaryButton href={buttonHref} size="large">
+                {buttonText}
+              </PrimaryButton>
+            )}
           </motion.div>
         </div>
       </div>
 
-      {/* Gradient fade to image */}
+      {/* Background - Map or Image */}
       <div className="absolute bottom-0 left-0 right-0 h-[60vh]">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-black/50 to-transparent z-10" />
-        <Image
-          src={backgroundImage}
-          alt={backgroundAlt}
-          fill
-          className="object-cover"
-          priority
-        />
+        {mapUrl ? (
+          <iframe
+            src={mapUrl}
+            className="w-full h-full border-0 pointer-events-none"
+            style={{
+              filter: 'grayscale(100%) brightness(0.4) contrast(1.2)',
+            }}
+            allowFullScreen={false}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            tabIndex={-1}
+          />
+        ) : backgroundImage ? (
+          <Image
+            src={backgroundImage}
+            alt={backgroundAlt}
+            fill
+            className="object-cover"
+            priority
+          />
+        ) : null}
       </div>
     </section>
   )

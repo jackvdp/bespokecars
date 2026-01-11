@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import PageHero from '@/components/PageHero'
 import PrimaryButton from '@/components/PrimaryButton'
 import SectionBackground from '@/components/SectionBackground'
 import { contactInfo, mapEmbedUrl } from '@/lib/contactData'
@@ -42,70 +43,17 @@ export default function ContactPage() {
     <main className="bg-[var(--background)]">
       <Navbar />
 
-      {/* Hero Section with Map Background */}
-      <section className="relative min-h-screen">
-        {/* Map Background */}
-        <div className="absolute inset-0">
-          <iframe
-            src={mapEmbedUrl}
-            className="w-full h-full border-0"
-            style={{
-              filter: 'grayscale(100%) invert(92%) contrast(0.9)',
-            }}
-            allowFullScreen={false}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-        </div>
-
-        {/* Overlay gradients */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-black/70 to-black pointer-events-none" />
-        <div className="absolute inset-0 bg-radial-gradient pointer-events-none" style={{
-          background: 'radial-gradient(ellipse at center, transparent 20%, black 80%)',
-        }} />
-
-        {/* Content */}
-        <div className="relative z-20 pt-32 pb-48 px-6">
-          <div className="max-w-[1200px] mx-auto text-center">
-            <motion.span
-              className="text-[var(--primary)] text-sm font-medium tracking-[0.2em] uppercase mb-6 block"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            >
-              Contact Us
-            </motion.span>
-            <motion.h1
-              className="text-4xl md:text-5xl lg:text-6xl font-[var(--font-title)] font-semibold tracking-tight text-[var(--foreground)] mb-8"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            >
-              Our team is ready to help
-            </motion.h1>
-            <motion.p
-              className="text-white/60 text-lg md:text-xl max-w-3xl mx-auto mb-10 leading-relaxed"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            >
-              Whether you need a specific service or have a particular car in mind, just let us know. Don&apos;t see what you&apos;re looking for? Our network can source it for you.
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <PrimaryButton href="#contact-form" size="large">
-                Get in touch
-              </PrimaryButton>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        label="Contact Us"
+        title="Our team is ready to help"
+        description="Whether you need a specific service or have a particular car in mind, just let us know. Don't see what you're looking for? Our network can source it for you."
+        buttonText="Get in touch"
+        onButtonClick={() => document.getElementById('contact-details')?.scrollIntoView({ behavior: 'smooth' })}
+        mapUrl={mapEmbedUrl}
+      />
 
       {/* Contact Details & Form Section */}
-      <section className="relative py-[120px] px-6">
+      <section id="contact-details" className="relative py-[120px] px-6">
         <SectionBackground glowPosition="both" gridFadeDirection="down" />
 
         <div className="max-w-[1200px] mx-auto relative z-10">
