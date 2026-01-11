@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const navLinks = [
@@ -13,6 +14,7 @@ const navLinks = [
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -95,30 +97,34 @@ export default function Navbar() {
             }}
             className="hidden md:flex"
           >
-            {navLinks.map((link) => (
-              <motion.a
-                key={link.name}
-                href={link.href}
-                style={{
-                  position: 'relative',
-                  padding: '8px 16px',
-                  color: 'white',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  letterSpacing: '0.025em',
-                  fontFamily: 'var(--font-body)',
-                  textDecoration: 'none',
-                  borderRadius: '8px',
-                }}
-                whileHover={{ 
-                  color: 'var(--primary)',
-                  textShadow: '0 0 20px var(--primary)',
-                }}
-                transition={{ duration: 0.2 }}
-              >
-                {link.name}
-              </motion.a>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href || pathname?.startsWith(link.href + '/')
+              return (
+                <motion.a
+                  key={link.name}
+                  href={link.href}
+                  style={{
+                    position: 'relative',
+                    padding: '8px 16px',
+                    color: isActive ? 'var(--primary)' : 'white',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    letterSpacing: '0.025em',
+                    fontFamily: 'var(--font-body)',
+                    textDecoration: 'none',
+                    borderRadius: '8px',
+                    textShadow: isActive ? '0 0 20px var(--primary)' : 'none',
+                  }}
+                  whileHover={{
+                    color: 'var(--primary)',
+                    textShadow: '0 0 20px var(--primary)',
+                  }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {link.name}
+                </motion.a>
+              )
+            })}
           </div>
 
           {/* CTA Button & Mobile Menu */}
@@ -261,31 +267,35 @@ export default function Navbar() {
               exit={{ opacity: 0, y: 20 }}
               transition={{ delay: 0.1 }}
             >
-              {navLinks.map((link, index) => (
-                <motion.a
-                  key={link.name}
-                  href={link.href}
-                  style={{
-                    fontSize: '36px',
-                    fontWeight: 700,
-                    color: 'var(--foreground)',
-                    letterSpacing: '-0.025em',
-                    fontFamily: 'var(--font-title)',
-                    textDecoration: 'none',
-                  }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ delay: 0.1 + index * 0.05 }}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  whileHover={{ 
-                    color: 'var(--primary)',
-                    textShadow: '0 0 30px var(--primary)'
-                  }}
-                >
-                  {link.name}
-                </motion.a>
-              ))}
+              {navLinks.map((link, index) => {
+                const isActive = pathname === link.href || pathname?.startsWith(link.href + '/')
+                return (
+                  <motion.a
+                    key={link.name}
+                    href={link.href}
+                    style={{
+                      fontSize: '36px',
+                      fontWeight: 700,
+                      color: isActive ? 'var(--primary)' : 'var(--foreground)',
+                      letterSpacing: '-0.025em',
+                      fontFamily: 'var(--font-title)',
+                      textDecoration: 'none',
+                      textShadow: isActive ? '0 0 30px var(--primary)' : 'none',
+                    }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ delay: 0.1 + index * 0.05 }}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    whileHover={{
+                      color: 'var(--primary)',
+                      textShadow: '0 0 30px var(--primary)'
+                    }}
+                  >
+                    {link.name}
+                  </motion.a>
+                )
+              })}
               <motion.a
                 href="#book"
                 style={{
