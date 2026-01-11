@@ -35,7 +35,7 @@ export default function CarCard({ car, index = 0 }: CarCardProps) {
       viewport={{ once: true, margin: '-50px' }}
       transition={{
         duration: 0.6,
-        delay: index * 0.1,
+        delay: (index % 3) * 0.1,
         ease: [0.22, 1, 0.36, 1],
       }}
       whileHover={{
@@ -59,6 +59,8 @@ export default function CarCard({ car, index = 0 }: CarCardProps) {
             src={car.imageUrls[0]}
             alt={car.name}
             fill
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             style={{ objectFit: 'cover' }}
           />
         ) : (
@@ -105,6 +107,8 @@ export default function CarCard({ car, index = 0 }: CarCardProps) {
               src={car.logoUrl}
               alt=""
               fill
+              loading="lazy"
+              sizes="44px"
               style={{ objectFit: 'contain', padding: '6px' }}
             />
           </div>
