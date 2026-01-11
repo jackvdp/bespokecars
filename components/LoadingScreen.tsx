@@ -9,9 +9,13 @@ interface LoadingScreenProps {
 
 export default function LoadingScreen({ isLoading }: LoadingScreenProps) {
   const [progress, setProgress] = useState(0)
+  const [shouldShow, setShouldShow] = useState(true)
+  const [isComplete, setIsComplete] = useState(false)
 
+  // Handle progress animation
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading && !isComplete) {
+      // Animate progress up to 90% while loading
       const interval = setInterval(() => {
         setProgress(prev => {
           if (prev >= 90) return 90
@@ -19,14 +23,40 @@ export default function LoadingScreen({ isLoading }: LoadingScreenProps) {
         })
       }, 200)
       return () => clearInterval(interval)
-    } else {
-      setProgress(100)
+    } else if (!isLoading && !isComplete) {
+      // Loading finished - animate to 100%
+      setIsComplete(true)
+
+      // Quickly animate to 100%
+      const animateToComplete = () => {
+        setProgress(prev => {
+          if (prev >= 100) return 100
+          return Math.min(100, prev + 5)
+        })
+      }
+
+      const interval = setInterval(animateToComplete, 30)
+
+      // After reaching 100%, wait a moment then dismiss
+      const dismissTimeout = setTimeout(() => {
+        clearInterval(interval)
+        setProgress(100)
+        // Brief pause at 100% before dismissing
+        setTimeout(() => {
+          setShouldShow(false)
+        }, 400)
+      }, 300)
+
+      return () => {
+        clearInterval(interval)
+        clearTimeout(dismissTimeout)
+      }
     }
-  }, [isLoading])
+  }, [isLoading, isComplete])
 
   return (
     <AnimatePresence>
-      {isLoading && (
+      {shouldShow && (
         <motion.div
           className="fixed inset-0 overflow-hidden"
           style={{ backgroundColor: '#000000', zIndex: 99999, isolation: 'isolate' }}
