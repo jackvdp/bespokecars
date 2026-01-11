@@ -586,3 +586,47 @@ When creating a new section:
     /logos
     /cars
 ```
+
+---
+
+## Coding Standards
+
+### Styling Approach
+**Always use Tailwind CSS classes for styling.** Do not use inline `style={{}}` objects unless absolutely necessary (e.g., dynamic values that can't be expressed in Tailwind).
+
+```tsx
+// ✅ Good - use Tailwind classes
+<div className="absolute inset-0 bg-black/40 pointer-events-none" />
+
+// ❌ Avoid - inline styles
+<div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)' }} />
+```
+
+### Tailwind Custom Values
+Use CSS variables with Tailwind's arbitrary value syntax:
+```tsx
+className="text-[var(--primary)]"
+className="bg-[var(--background)]"
+className="font-[var(--font-title)]"
+```
+
+### Common Tailwind Patterns
+```tsx
+// Card background
+className="bg-white/[0.03] border border-white/[0.08] rounded-3xl"
+
+// Section padding
+className="py-[120px] px-6"
+
+// Max width container
+className="max-w-[1200px] w-full mx-auto"
+
+// Text styles
+className="text-[var(--primary)] text-sm font-medium tracking-[0.2em] uppercase"
+className="text-[var(--foreground)] text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight"
+className="text-white/60 text-base leading-relaxed"
+
+// Flex/Grid layouts
+className="flex flex-col items-center justify-center"
+className="grid grid-cols-1 md:grid-cols-3 gap-10"
+```
