@@ -15,7 +15,6 @@ const navLinks = [
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isMobile, setIsMobile] = useState(true) // Default to mobile for SSR
   const pathname = usePathname()
 
   useEffect(() => {
@@ -23,19 +22,8 @@ export default function Navbar() {
       setIsScrolled(window.scrollY > 50)
     }
 
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-
-    // Set initial value
-    handleResize()
-
     window.addEventListener('scroll', handleScroll, { passive: true })
-    window.addEventListener('resize', handleResize)
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-      window.removeEventListener('resize', handleResize)
-    }
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
@@ -102,59 +90,54 @@ export default function Navbar() {
           </motion.a>
 
           {/* Desktop Navigation */}
-          {!isMobile && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              {navLinks.map((link) => {
-                const isActive = pathname === link.href || pathname?.startsWith(link.href + '/')
-                return (
-                  <motion.a
-                    key={link.name}
-                    href={link.href}
-                    style={{
-                      position: 'relative',
-                      padding: '8px 16px',
-                      color: isActive ? 'var(--primary)' : 'white',
-                      fontSize: '14px',
-                      fontWeight: 500,
-                      letterSpacing: '0.025em',
-                      fontFamily: 'var(--font-body)',
-                      textDecoration: 'none',
-                      borderRadius: '8px',
-                      textShadow: isActive ? '0 0 20px var(--primary)' : 'none',
-                    }}
-                    whileHover={{
-                      color: 'var(--primary)',
-                      textShadow: '0 0 20px var(--primary)',
-                    }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {link.name}
-                  </motion.a>
-                )
-              })}
-            </div>
-          )}
+          <div className="hidden md:flex items-center gap-1">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href || pathname?.startsWith(link.href + '/')
+              return (
+                <motion.a
+                  key={link.name}
+                  href={link.href}
+                  style={{
+                    position: 'relative',
+                    padding: '8px 16px',
+                    color: isActive ? 'var(--primary)' : 'white',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    letterSpacing: '0.025em',
+                    fontFamily: 'var(--font-body)',
+                    textDecoration: 'none',
+                    borderRadius: '8px',
+                    textShadow: isActive ? '0 0 20px var(--primary)' : 'none',
+                  }}
+                  whileHover={{
+                    color: 'var(--primary)',
+                    textShadow: '0 0 20px var(--primary)',
+                  }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {link.name}
+                </motion.a>
+              )
+            })}
+          </div>
 
           {/* CTA Button - Desktop only */}
-          {!isMobile && (
+          <div className="hidden md:flex">
             <PrimaryButton href="/contact" size="small">
               Book Now
             </PrimaryButton>
-          )}
+          </div>
 
           {/* Mobile Menu Button */}
-          {isMobile && (
-            <motion.button
-              style={{
-                display: 'flex',
-                width: '40px',
-                height: '40px',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-              }}
+          <motion.button
+            className="flex md:hidden items-center justify-center"
+            style={{
+              width: '40px',
+              height: '40px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+            }}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             whileTap={{ scale: 0.9 }}
           >
@@ -202,7 +185,6 @@ export default function Navbar() {
               />
             </div>
           </motion.button>
-          )}
         </motion.div>
       </motion.nav>
 

@@ -158,21 +158,3 @@
   }
 }
 
-/* Responsive visibility utilities */
-.desktop-only {
-  display: none !important;
-}
-@media (min-width: 768px) {
-  .desktop-only {
-    display: block !important;
-  }
-}
-
-.mobile-only {
-  display: flex !important;
-}
-@media (min-width: 768px) {
-  .mobile-only {
-    display: none !important;
-  }
-}
