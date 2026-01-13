@@ -43,13 +43,13 @@ export default function Navbar() {
       >
         <motion.div
           style={{
-            width: 'fit-content',
+            maxWidth: '1280px',
             margin: '0 auto',
             borderRadius: '9999px',
             padding: '12px 28px',
             display: 'flex',
             alignItems: 'center',
-            gap: '32px',
+            justifyContent: 'space-between',
             borderWidth: 1,
             borderStyle: 'solid',
           }}
