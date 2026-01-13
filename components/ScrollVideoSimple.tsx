@@ -41,7 +41,7 @@ export default function ScrollVideoSimple({
   // Handle video ready
   useEffect(() => {
     if (!shouldLoad) return
-    
+
     const video = videoRef.current
     if (!video) return
 
@@ -52,17 +52,38 @@ export default function ScrollVideoSimple({
       setIsVideoReady(true)
     }
 
+    // Also listen for canplay as fallback for mobile
+    const handleCanPlay = () => {
+      if (!isVideoReady) {
+        handleLoadedMetadata()
+      }
+    }
+
     video.addEventListener('loadedmetadata', handleLoadedMetadata)
-    
+    video.addEventListener('canplay', handleCanPlay)
+
     // Check if already loaded
     if (video.readyState >= 2) {
       handleLoadedMetadata()
+    } else {
+      // Force load on mobile - browsers ignore preload="auto"
+      video.load()
+
+      // Attempt to play (muted videos can autoplay on mobile)
+      // This triggers the browser to actually load the video
+      video.play().then(() => {
+        video.pause()
+        video.currentTime = 0
+      }).catch(() => {
+        // Play failed, but load() should still work
+      })
     }
 
     return () => {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata)
+      video.removeEventListener('canplay', handleCanPlay)
     }
-  }, [shouldLoad])
+  }, [shouldLoad, isVideoReady])
 
   // Manual scroll handler for video sync (more reliable than Framer Motion's onChange)
   useEffect(() => {

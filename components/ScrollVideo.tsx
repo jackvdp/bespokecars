@@ -56,16 +56,37 @@ export default function ScrollVideo({
       onLoadComplete?.()
     }
 
+    // Also listen for canplay as fallback for mobile
+    const handleCanPlay = () => {
+      if (!isLoaded) {
+        handleLoadedMetadata()
+      }
+    }
+
     video.addEventListener('loadedmetadata', handleLoadedMetadata)
-    
+    video.addEventListener('canplay', handleCanPlay)
+
     if (video.readyState >= 2) {
       handleLoadedMetadata()
+    } else {
+      // Force load on mobile - browsers ignore preload="auto"
+      video.load()
+
+      // Attempt to play (muted videos can autoplay on mobile)
+      // This triggers the browser to actually load the video
+      video.play().then(() => {
+        video.pause()
+        video.currentTime = 0
+      }).catch(() => {
+        // Play failed, but load() should still work
+      })
     }
-    
+
     return () => {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata)
+      video.removeEventListener('canplay', handleCanPlay)
     }
-  }, [onLoadComplete])
+  }, [onLoadComplete, isLoaded])
 
   const getActiveOverlayIndex = useCallback((progress: number) => {
     for (let i = textOverlays.length - 1; i >= 0; i--) {
