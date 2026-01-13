@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@source "../components/**/*.tsx";
+@source "../app/**/*.tsx";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -152,5 +155,24 @@
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-title);
+  }
+}
+
+/* Responsive visibility utilities */
+.desktop-only {
+  display: none !important;
+}
+@media (min-width: 768px) {
+  .desktop-only {
+    display: block !important;
+  }
+}
+
+.mobile-only {
+  display: flex !important;
+}
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none !important;
   }
 }

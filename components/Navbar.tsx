@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import PrimaryButton from './PrimaryButton'
 
 const navLinks = [
   { name: 'Fleet', href: '/cars' },
@@ -14,6 +15,7 @@ const navLinks = [
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(true) // Default to mobile for SSR
   const pathname = usePathname()
 
   useEffect(() => {
@@ -21,8 +23,19 @@ export default function Navbar() {
       setIsScrolled(window.scrollY > 50)
     }
 
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    // Set initial value
+    handleResize()
+
     window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', handleResize)
+    }
   }, [])
 
   return (
@@ -42,13 +55,13 @@ export default function Navbar() {
       >
         <motion.div
           style={{
-            maxWidth: '1280px',
+            width: 'fit-content',
             margin: '0 auto',
             borderRadius: '9999px',
             padding: '12px 28px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            gap: '32px',
             borderWidth: 1,
             borderStyle: 'solid',
           }}
@@ -71,7 +84,7 @@ export default function Navbar() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <motion.span 
+            <motion.span
               style={{
                 color: 'var(--foreground)',
                 fontWeight: 500,
@@ -79,7 +92,7 @@ export default function Navbar() {
                 fontFamily: 'var(--font-title)',
                 letterSpacing: '0.1em',
               }}
-              whileHover={{ 
+              whileHover={{
                 textShadow: '0 0 20px rgba(255, 255, 255, 0.5)',
               }}
               transition={{ duration: 0.3 }}
@@ -89,141 +102,107 @@ export default function Navbar() {
           </motion.a>
 
           {/* Desktop Navigation */}
-          <div 
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-            }}
-            className="hidden md:flex"
-          >
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href || pathname?.startsWith(link.href + '/')
-              return (
-                <motion.a
-                  key={link.name}
-                  href={link.href}
-                  style={{
-                    position: 'relative',
-                    padding: '8px 16px',
-                    color: isActive ? 'var(--primary)' : 'white',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    letterSpacing: '0.025em',
-                    fontFamily: 'var(--font-body)',
-                    textDecoration: 'none',
-                    borderRadius: '8px',
-                    textShadow: isActive ? '0 0 20px var(--primary)' : 'none',
-                  }}
-                  whileHover={{
-                    color: 'var(--primary)',
-                    textShadow: '0 0 20px var(--primary)',
-                  }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {link.name}
-                </motion.a>
-              )
-            })}
-          </div>
+          {!isMobile && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href || pathname?.startsWith(link.href + '/')
+                return (
+                  <motion.a
+                    key={link.name}
+                    href={link.href}
+                    style={{
+                      position: 'relative',
+                      padding: '8px 16px',
+                      color: isActive ? 'var(--primary)' : 'white',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      letterSpacing: '0.025em',
+                      fontFamily: 'var(--font-body)',
+                      textDecoration: 'none',
+                      borderRadius: '8px',
+                      textShadow: isActive ? '0 0 20px var(--primary)' : 'none',
+                    }}
+                    whileHover={{
+                      color: 'var(--primary)',
+                      textShadow: '0 0 20px var(--primary)',
+                    }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {link.name}
+                  </motion.a>
+                )
+              })}
+            </div>
+          )}
 
-          {/* CTA Button & Mobile Menu */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <motion.a
-              href="#book"
-              style={{
-                position: 'relative',
-                padding: '10px 20px',
-                borderRadius: '9999px',
-                overflow: 'hidden',
-                textDecoration: 'none',
-                backgroundColor: 'var(--primary)',
-              }}
-              className="hidden sm:flex"
-              whileHover={{ 
-                scale: 1.05,
-                boxShadow: '0 0 30px var(--primary)',
-              }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.2 }}
-            >
-              <span 
-                style={{
-                  position: 'relative',
-                  zIndex: 10,
-                  color: 'var(--background)',
-                  fontWeight: 600,
-                  fontSize: '13px',
-                  letterSpacing: '0.1em',
-                  fontFamily: 'var(--font-body)',
-                  textTransform: 'uppercase',
-                }}
-              >
-                Book Now
-              </span>
-            </motion.a>
+          {/* CTA Button - Desktop only */}
+          {!isMobile && (
+            <PrimaryButton href="/contact" size="small">
+              Book Now
+            </PrimaryButton>
+          )}
 
-            {/* Mobile Menu Button */}
+          {/* Mobile Menu Button */}
+          {isMobile && (
             <motion.button
               style={{
+                display: 'flex',
                 width: '40px',
                 height: '40px',
-                display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
               }}
-              className="flex md:hidden"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              whileTap={{ scale: 0.9 }}
-            >
-              <div style={{ width: '24px', height: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <motion.span
-                  style={{
-                    width: '100%',
-                    height: '2px',
-                    backgroundColor: 'var(--foreground)',
-                    transformOrigin: 'left',
-                    display: 'block',
-                  }}
-                  animate={{ 
-                    rotate: isMobileMenuOpen ? 45 : 0,
-                    y: isMobileMenuOpen ? -1 : 0
-                  }}
-                  transition={{ duration: 0.3 }}
-                />
-                <motion.span
-                  style={{
-                    width: '100%',
-                    height: '2px',
-                    backgroundColor: 'var(--foreground)',
-                    display: 'block',
-                  }}
-                  animate={{ 
-                    opacity: isMobileMenuOpen ? 0 : 1,
-                    x: isMobileMenuOpen ? 20 : 0
-                  }}
-                  transition={{ duration: 0.3 }}
-                />
-                <motion.span
-                  style={{
-                    width: '100%',
-                    height: '2px',
-                    backgroundColor: 'var(--foreground)',
-                    transformOrigin: 'left',
-                    display: 'block',
-                  }}
-                  animate={{ 
-                    rotate: isMobileMenuOpen ? -45 : 0,
-                    y: isMobileMenuOpen ? 1 : 0
-                  }}
-                  transition={{ duration: 0.3 }}
-                />
-              </div>
-            </motion.button>
-          </div>
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            whileTap={{ scale: 0.9 }}
+          >
+            <div style={{ width: '24px', height: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <motion.span
+                style={{
+                  width: '100%',
+                  height: '2px',
+                  backgroundColor: 'var(--foreground)',
+                  transformOrigin: 'left',
+                  display: 'block',
+                }}
+                animate={{
+                  rotate: isMobileMenuOpen ? 45 : 0,
+                  y: isMobileMenuOpen ? -1 : 0
+                }}
+                transition={{ duration: 0.3 }}
+              />
+              <motion.span
+                style={{
+                  width: '100%',
+                  height: '2px',
+                  backgroundColor: 'var(--foreground)',
+                  display: 'block',
+                }}
+                animate={{
+                  opacity: isMobileMenuOpen ? 0 : 1,
+                  x: isMobileMenuOpen ? 20 : 0
+                }}
+                transition={{ duration: 0.3 }}
+              />
+              <motion.span
+                style={{
+                  width: '100%',
+                  height: '2px',
+                  backgroundColor: 'var(--foreground)',
+                  transformOrigin: 'left',
+                  display: 'block',
+                }}
+                animate={{
+                  rotate: isMobileMenuOpen ? -45 : 0,
+                  y: isMobileMenuOpen ? 1 : 0
+                }}
+                transition={{ duration: 0.3 }}
+              />
+            </div>
+          </motion.button>
+          )}
         </motion.div>
       </motion.nav>
 
@@ -296,34 +275,18 @@ export default function Navbar() {
                   </motion.a>
                 )
               })}
-              <motion.a
-                href="#book"
-                style={{
-                  marginTop: '16px',
-                  padding: '16px 32px',
-                  borderRadius: '9999px',
-                  backgroundColor: 'var(--primary)',
-                  color: 'var(--background)',
-                  fontWeight: 600,
-                  fontSize: '16px',
-                  letterSpacing: '0.1em',
-                  fontFamily: 'var(--font-body)',
-                  textDecoration: 'none',
-                  textTransform: 'uppercase',
-                }}
+              <motion.div
+                style={{ marginTop: '16px' }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ delay: 0.3 }}
                 onClick={() => setIsMobileMenuOpen(false)}
-                whileHover={{ 
-                  boxShadow: '0 0 30px var(--primary)',
-                  scale: 1.05
-                }}
-                whileTap={{ scale: 0.98 }}
               >
-                Book Now
-              </motion.a>
+                <PrimaryButton href="/contact" size="large">
+                  Book Now
+                </PrimaryButton>
+              </motion.div>
             </motion.div>
           </motion.div>
         )}
