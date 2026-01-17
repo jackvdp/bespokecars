@@ -78,26 +78,33 @@ interface ServicesScrollContentProps {
 
 export default function ServicesScrollContent({ scrollYProgress }: ServicesScrollContentProps) {
   const [screenWidth, setScreenWidth] = useState(1200)
-  
+  const [isMobile, setIsMobile] = useState(false)
+
   useEffect(() => {
-    setScreenWidth(window.innerWidth)
-    const handleResize = () => setScreenWidth(window.innerWidth)
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
+    const updateDimensions = () => {
+      setScreenWidth(window.innerWidth)
+      setIsMobile(window.innerWidth < 768)
+    }
+    updateDimensions()
+    window.addEventListener('resize', updateDimensions)
+    return () => window.removeEventListener('resize', updateDimensions)
   }, [])
 
-  const cardWidth = 900
+  // Responsive card width
+  const cardWidth = isMobile ? Math.min(screenWidth - 32, 400) : 900
+  const cardPadding = isMobile ? 24 : 48
+
   // Large gap so only one card visible at a time (full screen width between cards)
   const cardGap = screenWidth
-  
+
   // Total width of all cards and gaps
   const totalCardsWidth = (serviceCards.length * cardWidth) + ((serviceCards.length - 1) * cardGap)
-  
+
   // Start position: first card just off-screen to the right
   const startX = screenWidth
   // End position: last card just off-screen to the left
   const endX = -totalCardsWidth
-  
+
   const x = useTransform(
     scrollYProgress,
     [0, 1],
@@ -128,8 +135,8 @@ export default function ServicesScrollContent({ scrollYProgress }: ServicesScrol
               position: 'relative',
               width: `${cardWidth}px`,
               flexShrink: 0,
-              padding: '48px',
-              borderRadius: '32px',
+              padding: `${cardPadding}px`,
+              borderRadius: isMobile ? '24px' : '32px',
               backgroundColor: '#0a0a0a',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               overflow: 'hidden',
@@ -144,19 +151,19 @@ export default function ServicesScrollContent({ scrollYProgress }: ServicesScrol
                                   linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)`,
                 backgroundSize: '40px 40px',
                 pointerEvents: 'none',
-                borderRadius: '32px',
+                borderRadius: isMobile ? '24px' : '32px',
                 maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0) 70%)',
                 WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0) 70%)',
               }}
             />
-            
+
             {/* Top accent line */}
             <div
               style={{
                 position: 'absolute',
                 top: 0,
-                left: '48px',
-                right: '48px',
+                left: `${cardPadding}px`,
+                right: `${cardPadding}px`,
                 height: '2px',
                 background: 'linear-gradient(90deg, transparent, var(--primary), transparent)',
                 opacity: 0.8,
@@ -181,11 +188,11 @@ export default function ServicesScrollContent({ scrollYProgress }: ServicesScrol
             {/* Content */}
             <div style={{ position: 'relative', zIndex: 1 }}>
               {/* Header */}
-              <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <div style={{ textAlign: 'center', marginBottom: isMobile ? '24px' : '40px' }}>
                 <p
                   style={{
                     color: 'var(--primary)',
-                    fontSize: '12px',
+                    fontSize: isMobile ? '11px' : '12px',
                     fontWeight: 500,
                     letterSpacing: '0.2em',
                     textTransform: 'uppercase',
@@ -198,7 +205,7 @@ export default function ServicesScrollContent({ scrollYProgress }: ServicesScrol
                 <h2
                   style={{
                     color: 'var(--foreground)',
-                    fontSize: 'clamp(28px, 4vw, 44px)',
+                    fontSize: isMobile ? '24px' : 'clamp(28px, 4vw, 44px)',
                     fontWeight: 600,
                     fontFamily: 'var(--font-title)',
                     letterSpacing: '-0.02em',
@@ -212,16 +219,16 @@ export default function ServicesScrollContent({ scrollYProgress }: ServicesScrol
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: '24px',
+                  gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+                  gap: isMobile ? '16px' : '24px',
                 }}
               >
                 {card.services.map((service) => (
                   <div
                     key={service.title}
                     style={{
-                      padding: '24px',
-                      borderRadius: '16px',
+                      padding: isMobile ? '16px' : '24px',
+                      borderRadius: isMobile ? '12px' : '16px',
                       backgroundColor: 'var(--card-surface)',
                       border: '1px solid rgba(255, 255, 255, 0.06)',
                     }}
@@ -229,7 +236,7 @@ export default function ServicesScrollContent({ scrollYProgress }: ServicesScrol
                     <h3
                       style={{
                         color: 'var(--foreground)',
-                        fontSize: '18px',
+                        fontSize: isMobile ? '16px' : '18px',
                         fontWeight: 600,
                         fontFamily: 'var(--font-title)',
                         marginBottom: '8px',
@@ -240,7 +247,7 @@ export default function ServicesScrollContent({ scrollYProgress }: ServicesScrol
                     <p
                       style={{
                         color: 'rgba(255, 255, 255, 0.5)',
-                        fontSize: '14px',
+                        fontSize: isMobile ? '13px' : '14px',
                         fontFamily: 'var(--font-body)',
                         lineHeight: 1.5,
                       }}
@@ -252,8 +259,8 @@ export default function ServicesScrollContent({ scrollYProgress }: ServicesScrol
               </div>
 
               {/* CTA Button */}
-              <div style={{ textAlign: 'center', marginTop: '40px' }}>
-                <PrimaryButton href="#services" size="medium">
+              <div style={{ textAlign: 'center', marginTop: isMobile ? '24px' : '40px' }}>
+                <PrimaryButton href="#services" size={isMobile ? 'small' : 'medium'}>
                   Learn More
                 </PrimaryButton>
               </div>
