@@ -172,11 +172,7 @@ export default function FleetContactSection({ cars }: FleetContactSectionProps) 
 
                 {/* Car Grid */}
                 <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-                    gap: '24px',
-                  }}
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
                   {cars.map((car, index) => (
                     <CarCard key={car._id} car={car} index={index} />

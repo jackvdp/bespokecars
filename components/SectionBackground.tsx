@@ -24,44 +24,38 @@ export default function SectionBackground({
   }
 
   return (
-    <>
+    <div className="absolute inset-0 z-0 pointer-events-none">
       {/* Top glow */}
       {(glowPosition === 'top' || glowPosition === 'both') && (
         <div
+          className="absolute inset-0"
           style={{
-            position: 'absolute',
-            inset: 0,
             background: 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0, 210, 200, 0.1) 0%, transparent 60%)',
-            pointerEvents: 'none',
           }}
         />
       )}
-      
+
       {/* Bottom glow */}
       {(glowPosition === 'bottom' || glowPosition === 'both') && (
         <div
+          className="absolute inset-0"
           style={{
-            position: 'absolute',
-            inset: 0,
             background: 'radial-gradient(ellipse 60% 40% at 100% 100%, rgba(0, 210, 200, 0.06) 0%, transparent 50%)',
-            pointerEvents: 'none',
           }}
         />
       )}
-      
+
       {/* Grid pattern */}
       <div
+        className="absolute inset-0"
         style={{
-          position: 'absolute',
-          inset: 0,
           backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
                             linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px)`,
           backgroundSize: '60px 60px',
-          pointerEvents: 'none',
           maskImage: getGridMask(),
           WebkitMaskImage: getGridMask(),
         }}
       />
-    </>
+    </div>
   )
 }
