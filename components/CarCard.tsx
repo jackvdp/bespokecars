@@ -85,14 +85,26 @@ export default function CarCard({ car, index = 0 }: CarCardProps) {
             />
             {/* Logo or car name */}
             {car.logo ? (
-              <div className="relative w-16 h-16 z-10 rounded-2xl overflow-hidden bg-white/90 p-2">
-                <Image
-                  src={urlFor(car.logo).width(128).height(128).url()}
-                  alt=""
-                  fill
-                  loading="lazy"
-                  className="object-contain"
-                />
+              <div
+                style={{
+                  position: 'relative',
+                  zIndex: 10,
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '16px',
+                  backgroundColor: 'rgba(255, 255, 255, 1)',
+                  padding: '8px',
+                }}
+              >
+                <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                  <Image
+                    src={urlFor(car.logo).width(128).height(128).url()}
+                    alt=""
+                    fill
+                    loading="lazy"
+                    style={{ objectFit: 'contain' }}
+                  />
+                </div>
               </div>
             ) : (
               <span className="relative z-10 text-white/20 text-sm font-medium tracking-[0.1em] uppercase font-[var(--font-body)]">
