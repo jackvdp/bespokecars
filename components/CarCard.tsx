@@ -12,6 +12,7 @@ export interface Car {
   category: { title: string } | null
   logo: SanityImageSource | null
   images: SanityImageSource[] | null
+  priceDaily: number | null
 }
 
 interface CarCardProps {

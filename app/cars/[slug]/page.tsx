@@ -15,7 +15,10 @@ async function getCar(slug: string) {
       description,
       category->{ title, slug },
       logo,
-      images
+      images,
+      priceDaily,
+      priceWeekend,
+      priceWeekly
     }
   `, { slug })
 }

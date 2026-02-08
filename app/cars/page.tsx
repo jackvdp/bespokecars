@@ -10,6 +10,7 @@ async function getCars() {
       category->{ title, slug },
       logo,
       images,
+      priceDaily,
       "hasImages": count(images) > 0
     } | order(hasImages asc, name asc)
   `)

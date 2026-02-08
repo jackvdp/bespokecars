@@ -29,6 +29,7 @@ interface CarsContentProps {
 
 export default function CarsContent({ cars, categories }: CarsContentProps) {
   const [activeFilter, setActiveFilter] = useState<string>('all')
+  const [sortOrder, setSortOrder] = useState<'default' | 'low' | 'high'>('default')
   const [modalOpen, setModalOpen] = useState(false)
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
 
@@ -75,6 +76,19 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
     : cars.filter(car =>
         car.category?.title.toLowerCase() === activeFilter.toLowerCase()
       )
+
+  // Sort cars based on sort order
+  const sortedCars = sortOrder === 'default'
+    ? filteredCars
+    : [...filteredCars].sort((a, b) => {
+        const aPrice = a.priceDaily ?? null
+        const bPrice = b.priceDaily ?? null
+        // Cars without prices go to end
+        if (aPrice === null && bPrice === null) return 0
+        if (aPrice === null) return 1
+        if (bPrice === null) return -1
+        return sortOrder === 'low' ? aPrice - bPrice : bPrice - aPrice
+      })
 
   return (
     <main className="bg-[var(--background)]">
@@ -130,15 +144,67 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
               </button>
             ))}
           </motion.div>
+
+          {/* Sort Buttons */}
+          <motion.div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '12px',
+              marginBottom: '64px',
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <span style={{
+              color: 'rgba(255, 255, 255, 0.4)',
+              fontSize: '13px',
+              fontWeight: 500,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase' as const,
+              fontFamily: 'var(--font-body)',
+            }}>
+              Sort:
+            </span>
+            {([
+              { id: 'default' as const, label: 'Default' },
+              { id: 'low' as const, label: 'Price: Low → High' },
+              { id: 'high' as const, label: 'Price: High → Low' },
+            ]).map((option) => (
+              <button
+                key={option.id}
+                onClick={() => setSortOrder(option.id)}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: '9999px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase' as const,
+                  border: '1px solid',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s',
+                  backgroundColor: sortOrder === option.id ? 'var(--primary)' : 'transparent',
+                  color: sortOrder === option.id ? 'black' : 'rgba(255, 255, 255, 0.7)',
+                  borderColor: sortOrder === option.id ? 'var(--primary)' : 'rgba(255, 255, 255, 0.2)',
+                }}
+              >
+                {option.label}
+              </button>
+            ))}
+          </motion.div>
         </div>
       </section>
 
       {/* Cars Grid Section */}
       <section className="relative pb-32 px-6">
         <div className="max-w-[1200px] mx-auto relative z-10">
-          {filteredCars.length > 0 ? (
+          {sortedCars.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCars.map((car, index) => (
+              {sortedCars.map((car, index) => (
                 <CarCard key={car._id} car={car} index={index} />
               ))}
             </div>

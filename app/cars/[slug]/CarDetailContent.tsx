@@ -17,6 +17,9 @@ interface Car {
   category: { title: string; slug: { current: string } } | null
   logo: SanityImageSource | null
   images: SanityImageSource[] | null
+  priceDaily: number | null
+  priceWeekend: number | null
+  priceWeekly: number | null
 }
 
 interface CarDetailContentProps {
@@ -113,6 +116,171 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
           </motion.div>
         </div>
       </section>
+
+      {/* Pricing Section */}
+      {(car.priceDaily || car.priceWeekend || car.priceWeekly) && (
+        <section style={{ position: 'relative', padding: '0 24px', paddingBottom: '80px' }}>
+          <div style={{ maxWidth: '800px', width: '100%', margin: '0 auto', position: 'relative', zIndex: 10 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-100px' }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              style={{
+                position: 'relative',
+                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '24px',
+                padding: '40px',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Cyan accent line */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: '40px',
+                right: '40px',
+                height: '2px',
+                background: 'linear-gradient(90deg, transparent, var(--primary), transparent)',
+                opacity: 0.6,
+              }} />
+
+              {/* Price columns */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0',
+                flexWrap: 'wrap',
+              }}>
+                {/* Daily */}
+                {car.priceDaily && (
+                  <>
+                    <div style={{
+                      flex: '1 1 200px',
+                      textAlign: 'center',
+                      padding: '16px 24px',
+                    }}>
+                      <p style={{
+                        color: 'var(--primary)',
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        letterSpacing: '0.2em',
+                        textTransform: 'uppercase' as const,
+                        fontFamily: 'var(--font-body)',
+                        marginBottom: '12px',
+                      }}>
+                        Daily (Mon–Thu)
+                      </p>
+                      <p style={{
+                        color: 'var(--foreground)',
+                        fontSize: '34px',
+                        fontWeight: 600,
+                        fontFamily: 'var(--font-title)',
+                        letterSpacing: '-0.02em',
+                      }}>
+                        £{car.priceDaily.toLocaleString()}
+                      </p>
+                    </div>
+                    {(car.priceWeekend || car.priceWeekly) && (
+                      <div style={{
+                        width: '1px',
+                        height: '40px',
+                        background: 'linear-gradient(180deg, transparent, var(--primary), transparent)',
+                        opacity: 0.5,
+                        flexShrink: 0,
+                      }} />
+                    )}
+                  </>
+                )}
+
+                {/* Weekend */}
+                {car.priceWeekend && (
+                  <>
+                    <div style={{
+                      flex: '1 1 200px',
+                      textAlign: 'center',
+                      padding: '16px 24px',
+                    }}>
+                      <p style={{
+                        color: 'var(--primary)',
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        letterSpacing: '0.2em',
+                        textTransform: 'uppercase' as const,
+                        fontFamily: 'var(--font-body)',
+                        marginBottom: '12px',
+                      }}>
+                        Weekend
+                      </p>
+                      <p style={{
+                        color: 'var(--foreground)',
+                        fontSize: '34px',
+                        fontWeight: 600,
+                        fontFamily: 'var(--font-title)',
+                        letterSpacing: '-0.02em',
+                      }}>
+                        £{car.priceWeekend.toLocaleString()}
+                      </p>
+                    </div>
+                    {car.priceWeekly && (
+                      <div style={{
+                        width: '1px',
+                        height: '40px',
+                        background: 'linear-gradient(180deg, transparent, var(--primary), transparent)',
+                        opacity: 0.5,
+                        flexShrink: 0,
+                      }} />
+                    )}
+                  </>
+                )}
+
+                {/* Weekly */}
+                {car.priceWeekly && (
+                  <div style={{
+                    flex: '1 1 200px',
+                    textAlign: 'center',
+                    padding: '16px 24px',
+                  }}>
+                    <p style={{
+                      color: 'var(--primary)',
+                      fontSize: '12px',
+                      fontWeight: 500,
+                      letterSpacing: '0.2em',
+                      textTransform: 'uppercase' as const,
+                      fontFamily: 'var(--font-body)',
+                      marginBottom: '12px',
+                    }}>
+                      Full Week
+                    </p>
+                    <p style={{
+                      color: 'var(--foreground)',
+                      fontSize: '34px',
+                      fontWeight: 600,
+                      fontFamily: 'var(--font-title)',
+                      letterSpacing: '-0.02em',
+                    }}>
+                      £{car.priceWeekly.toLocaleString()}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Disclaimer */}
+              <p style={{
+                color: 'rgba(255, 255, 255, 0.4)',
+                fontSize: '14px',
+                fontFamily: 'var(--font-body)',
+                textAlign: 'center',
+                marginTop: '24px',
+              }}>
+                Prices are indicative. Contact us for a personalised quote.
+              </p>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Gallery Section */}
       {galleryImages.length > 0 && (
