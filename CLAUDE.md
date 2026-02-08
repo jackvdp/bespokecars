@@ -592,41 +592,41 @@ When creating a new section:
 ## Coding Standards
 
 ### Styling Approach
-**Always use Tailwind CSS classes for styling.** Do not use inline `style={{}}` objects unless absolutely necessary (e.g., dynamic values that can't be expressed in Tailwind).
+**Always use inline `style={{}}` objects for styling.** Tailwind CSS classes do not work in this project — they are not applied at runtime. Use inline styles for all layout, spacing, colours, and typography.
 
 ```tsx
-// ✅ Good - use Tailwind classes
+// ✅ Good - use inline styles
+<div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', pointerEvents: 'none' }} />
+
+// ❌ Avoid - Tailwind classes (do not work)
 <div className="absolute inset-0 bg-black/40 pointer-events-none" />
-
-// ❌ Avoid - inline styles
-<div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)' }} />
 ```
 
-### Tailwind Custom Values
-Use CSS variables with Tailwind's arbitrary value syntax:
+### CSS Variables
+Reference CSS variables directly in inline styles:
 ```tsx
-className="text-[var(--primary)]"
-className="bg-[var(--background)]"
-className="font-[var(--font-title)]"
+style={{ color: 'var(--primary)' }}
+style={{ backgroundColor: 'var(--background)' }}
+style={{ fontFamily: 'var(--font-title)' }}
 ```
 
-### Common Tailwind Patterns
+### Common Inline Style Patterns
 ```tsx
 // Card background
-className="bg-white/[0.03] border border-white/[0.08] rounded-3xl"
+style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '24px' }}
 
 // Section padding
-className="py-[120px] px-6"
+style={{ padding: '120px 24px' }}
 
 // Max width container
-className="max-w-[1200px] w-full mx-auto"
+style={{ maxWidth: '1200px', width: '100%', margin: '0 auto' }}
 
 // Text styles
-className="text-[var(--primary)] text-sm font-medium tracking-[0.2em] uppercase"
-className="text-[var(--foreground)] text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight"
-className="text-white/60 text-base leading-relaxed"
+style={{ color: 'var(--primary)', fontSize: '14px', fontWeight: 500, letterSpacing: '0.2em', textTransform: 'uppercase' }}
+style={{ color: 'var(--foreground)', fontSize: 'clamp(32px, 5vw, 56px)', fontWeight: 600, letterSpacing: '-0.02em' }}
+style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '16px', lineHeight: 1.6 }}
 
 // Flex/Grid layouts
-className="flex flex-col items-center justify-center"
-className="grid grid-cols-1 md:grid-cols-3 gap-10"
+style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
+style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px' }}
 ```
