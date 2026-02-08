@@ -530,11 +530,12 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
 
       {/* Booking Modal */}
       <Dialog open={modalOpen} onOpenChange={handleModalChange}>
-        <DialogContent style={{
-          backgroundColor: 'var(--background)',
-          borderColor: 'rgba(255, 255, 255, 0.1)',
-          maxWidth: '448px',
-        }}>
+        <DialogContent
+          className="top-0 left-0 right-0 bottom-0 translate-x-0 translate-y-0 max-w-full h-full rounded-none overflow-y-auto sm:top-1/2 sm:left-1/2 sm:right-auto sm:bottom-auto sm:-translate-x-1/2 sm:-translate-y-1/2 sm:max-w-md sm:h-auto sm:max-h-[85vh] sm:rounded-lg sm:overflow-y-auto"
+          style={{
+            backgroundColor: 'var(--background)',
+            borderColor: 'rgba(255, 255, 255, 0.1)',
+          }}>
           <DialogHeader>
             <DialogTitle style={{
               color: 'var(--foreground)',
