@@ -66,19 +66,39 @@ export default function CarCard({ car, index = 0 }: CarCardProps) {
             style={{ objectFit: 'cover' }}
           />
         ) : (
-          <div
-            style={{
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'rgba(255, 255, 255, 0.3)',
-              fontSize: '14px',
-              fontFamily: 'var(--font-body)',
-            }}
-          >
-            No image
+          <div className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden">
+            {/* Grid pattern */}
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                                  linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px)`,
+                backgroundSize: '40px 40px',
+              }}
+            />
+            {/* Cyan glow */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0, 210, 200, 0.08) 0%, transparent 70%)',
+              }}
+            />
+            {/* Logo or car name */}
+            {car.logo ? (
+              <div className="relative w-16 h-16 z-10 opacity-40">
+                <Image
+                  src={urlFor(car.logo).width(128).height(128).url()}
+                  alt=""
+                  fill
+                  loading="lazy"
+                  className="object-contain brightness-150 grayscale"
+                />
+              </div>
+            ) : (
+              <span className="relative z-10 text-white/20 text-sm font-medium tracking-[0.1em] uppercase font-[var(--font-body)]">
+                {car.name}
+              </span>
+            )}
           </div>
         )}
       </div>

@@ -162,7 +162,28 @@ export default function PageHero({
             className="object-cover"
             priority
           />
-        ) : null}
+        ) : (
+          <div className="absolute inset-0">
+            {/* Grid pattern */}
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                                  linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px)`,
+                backgroundSize: '60px 60px',
+                maskImage: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)',
+              }}
+            />
+            {/* Cyan glow */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: 'radial-gradient(ellipse 80% 50% at 50% 100%, rgba(0, 210, 200, 0.1) 0%, transparent 60%)',
+              }}
+            />
+          </div>
+        )}
       </div>
     </section>
   )
