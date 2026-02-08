@@ -39,6 +39,7 @@ export const companyAddress = {
 }
 
 export const companyPhone = '+44 (0) 20 2345 6789'
+export const companyWhatsApp = '447831640003'
 export const companyEmail = 'support@bespoke.com'
 
 export const mapEmbedUrl = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2484.5504876708474!2d-0.16891492302196045!3d51.48999097181047!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48760f9b8921b0ef%3A0x9c1f0f8f8f8f8f8f!2sKing's%20Rd%2C%20London!5e0!3m2!1sen!2suk!4v1704912000000!5m2!1sen!2suk"
