@@ -299,6 +299,60 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
         </div>
       </section>
 
+      {/* Special Request CTA */}
+      <section style={{
+        position: 'relative',
+        padding: '120px 24px',
+        zIndex: 1,
+      }}>
+        <SectionBackground glowPosition="bottom" gridFadeDirection="up" />
+        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 10 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <span style={{
+              color: 'var(--primary)',
+              fontSize: '14px',
+              fontWeight: 500,
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase' as const,
+              marginBottom: '16px',
+              display: 'block',
+              fontFamily: 'var(--font-body)',
+            }}>
+              Special Request
+            </span>
+            <h2 style={{
+              fontSize: 'clamp(32px, 5vw, 48px)',
+              fontFamily: 'var(--font-title)',
+              fontWeight: 600,
+              letterSpacing: '-0.02em',
+              color: 'var(--foreground)',
+              marginBottom: '16px',
+            }}>
+              Not found the car you&apos;re looking for?
+            </h2>
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.6)',
+              fontSize: '18px',
+              lineHeight: 1.6,
+              fontFamily: 'var(--font-body)',
+              marginBottom: '32px',
+              maxWidth: '560px',
+              margin: '0 auto 32px',
+            }}>
+              Our extensive partner network can source almost any vehicle. Tell us what you need and we&apos;ll make it happen.
+            </p>
+            <PrimaryButton onClick={() => setModalOpen(true)} size="large">
+              Special Request
+            </PrimaryButton>
+          </motion.div>
+        </div>
+      </section>
+
       <Footer />
 
       {/* Special Request Modal */}
