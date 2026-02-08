@@ -49,13 +49,13 @@ const services = [
     id: 'security',
     title: 'Close Protection',
     description: 'Discreet, secure transportation with trained security-cleared drivers for clients requiring enhanced security. Our close protection service combines luxury vehicles with professional security personnel, ensuring complete peace of mind for high-profile individuals and VIP clients.',
-    image: '/images/services/corporate.avif',
+    image: '/images/services/security.jpg',
   },
   {
     id: 'leasing',
     title: 'Vehicle Leasing',
     description: 'Flexible leasing options tailored to your individual circumstances — no credit checks required. Drive your dream car on your terms with our straightforward, hassle-free leasing plans designed to get you behind the wheel without the usual barriers.',
-    image: '/images/services/selfdrive.jpg',
+    image: '/images/services/leasing.jpg',
   },
 ]
 

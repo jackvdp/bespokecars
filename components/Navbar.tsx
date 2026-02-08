@@ -161,7 +161,7 @@ export default function Navbar({ backHref, backLabel }: NavbarProps = {}) {
 
           {/* CTA Button - Desktop only */}
           <div className="hidden md:flex">
-            <PrimaryButton href="/contact" size="small">
+            <PrimaryButton href="/cars" size="small">
               Book Now
             </PrimaryButton>
           </div>
@@ -303,7 +303,7 @@ export default function Navbar({ backHref, backLabel }: NavbarProps = {}) {
                 transition={{ delay: 0.3 }}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <PrimaryButton href="/contact" size="large">
+                <PrimaryButton href="/cars" size="large">
                   Book Now
                 </PrimaryButton>
               </motion.div>
