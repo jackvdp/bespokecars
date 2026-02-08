@@ -85,13 +85,13 @@ export default function CarCard({ car, index = 0 }: CarCardProps) {
             />
             {/* Logo or car name */}
             {car.logo ? (
-              <div className="relative w-16 h-16 z-10 opacity-40">
+              <div className="relative w-16 h-16 z-10 rounded-2xl overflow-hidden bg-white/90 p-2">
                 <Image
                   src={urlFor(car.logo).width(128).height(128).url()}
                   alt=""
                   fill
                   loading="lazy"
-                  className="object-contain brightness-150 grayscale"
+                  className="object-contain"
                 />
               </div>
             ) : (
