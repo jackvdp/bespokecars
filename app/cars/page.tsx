@@ -3,14 +3,15 @@ import CarsContent from './CarsContent'
 
 async function getCars() {
   return client.fetch(`
-    *[_type == "car"] | order(name asc) {
+    *[_type == "car"] {
       _id,
       name,
       slug,
       category->{ title, slug },
       logo,
-      images
-    }
+      images,
+      "hasImages": count(images) > 0
+    } | order(hasImages asc, name asc)
   `)
 }
 
