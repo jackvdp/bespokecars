@@ -12,7 +12,12 @@ const navLinks = [
   { name: 'Contact', href: '/contact' },
 ]
 
-export default function Navbar() {
+interface NavbarProps {
+  backHref?: string
+  backLabel?: string
+}
+
+export default function Navbar({ backHref, backLabel }: NavbarProps = {}) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const pathname = usePathname()
@@ -43,6 +48,7 @@ export default function Navbar() {
       >
         <motion.div
           style={{
+            position: 'relative',
             maxWidth: '1280px',
             margin: '0 auto',
             borderRadius: '9999px',
@@ -60,7 +66,38 @@ export default function Navbar() {
           }}
           transition={{ duration: 0.3 }}
         >
-          {/* Logo */}
+          {/* Back + Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            {backHref && (
+              <motion.a
+                href={backHref}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '6px 14px',
+                  borderRadius: '9999px',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  color: 'rgba(255, 255, 255, 0.6)',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  fontFamily: 'var(--font-body)',
+                  letterSpacing: '0.05em',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s',
+                }}
+                whileHover={{
+                  borderColor: 'var(--primary)',
+                  color: 'var(--primary)',
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+                {backLabel || 'Back'}
+              </motion.a>
+            )}
           <motion.a
             href="/"
             style={{
@@ -88,9 +125,10 @@ export default function Navbar() {
               BESPOKE CARS
             </motion.span>
           </motion.a>
+          </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          {/* Desktop Navigation - absolutely centered */}
+          <div className="hidden md:flex items-center gap-1" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
             {navLinks.map((link) => {
               const isActive = pathname === link.href || pathname?.startsWith(link.href + '/')
               return (

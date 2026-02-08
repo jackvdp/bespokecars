@@ -94,7 +94,7 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
 
   return (
     <main className="bg-[var(--background)]">
-      <Navbar />
+      <Navbar backHref="/cars" backLabel="All Cars" />
 
       {heroImage ? (
         <PageHero
