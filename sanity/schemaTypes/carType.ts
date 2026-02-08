@@ -63,6 +63,21 @@ export const carType = defineType({
       ],
     }),
     defineField({
+      name: 'priceDaily',
+      title: 'Daily Price (Mon-Thu)',
+      type: 'number',
+    }),
+    defineField({
+      name: 'priceWeekend',
+      title: 'Weekend Price',
+      type: 'number',
+    }),
+    defineField({
+      name: 'priceWeekly',
+      title: 'Weekly Price',
+      type: 'number',
+    }),
+    defineField({
       name: 'featured',
       type: 'boolean',
     }),
