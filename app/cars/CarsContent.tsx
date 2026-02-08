@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -32,6 +32,14 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
   const [sortOrder, setSortOrder] = useState<'default' | 'low' | 'high'>('default')
   const [modalOpen, setModalOpen] = useState(false)
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -77,6 +85,27 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
         car.category?.title.toLowerCase() === activeFilter.toLowerCase()
       )
 
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '12px 16px',
+    borderRadius: '12px',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    color: 'var(--foreground)',
+    fontSize: '14px',
+    fontFamily: 'var(--font-body)',
+    outline: 'none',
+    transition: 'border-color 0.2s',
+  }
+
+  const labelStyle: React.CSSProperties = {
+    display: 'block',
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: '14px',
+    marginBottom: '8px',
+    fontFamily: 'var(--font-body)',
+  }
+
   // Sort cars based on sort order
   const sortedCars = sortOrder === 'default'
     ? filteredCars
@@ -91,28 +120,51 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
       })
 
   return (
-    <main className="bg-[var(--background)]">
+    <main style={{ backgroundColor: 'var(--background)' }}>
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-16 px-6">
+      <section style={{ position: 'relative', paddingTop: '128px', paddingBottom: '64px', paddingLeft: '24px', paddingRight: '24px' }}>
         <SectionBackground glowPosition="top" gridFadeDirection="down" />
 
-        <div className="max-w-[1200px] mx-auto relative z-10">
+        <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 10 }}>
           {/* Header */}
           <motion.div
-            className="text-center mb-12"
+            style={{ textAlign: 'center', marginBottom: '48px' }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           >
-            <span className="text-[var(--primary)] text-sm font-medium tracking-[0.2em] uppercase mb-4 block">
+            <span style={{
+              color: 'var(--primary)',
+              fontSize: '14px',
+              fontWeight: 500,
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase' as const,
+              marginBottom: '16px',
+              display: 'block',
+              fontFamily: 'var(--font-body)',
+            }}>
               All Cars
             </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-[var(--font-title)] font-semibold tracking-tight text-[var(--foreground)] mb-6">
+            <h1 style={{
+              fontSize: 'clamp(32px, 5vw, 56px)',
+              fontFamily: 'var(--font-title)',
+              fontWeight: 600,
+              letterSpacing: '-0.02em',
+              color: 'var(--foreground)',
+              marginBottom: '24px',
+            }}>
               Find your perfect rental
             </h1>
-            <p className="text-white/60 text-lg max-w-2xl mx-auto mb-8">
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.6)',
+              fontSize: '18px',
+              maxWidth: '672px',
+              margin: '0 auto 32px',
+              lineHeight: 1.6,
+              fontFamily: 'var(--font-body)',
+            }}>
               Can&apos;t find what you&apos;re looking for? Our extensive partner network can source it for you.
             </p>
             <PrimaryButton onClick={() => setModalOpen(true)} size="medium">
@@ -122,7 +174,13 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
 
           {/* Filter Buttons */}
           <motion.div
-            className="flex flex-wrap justify-center gap-3 mb-16"
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: '12px',
+              marginBottom: '64px',
+            }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
@@ -131,14 +189,20 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
               <button
                 key={filter.id}
                 onClick={() => setActiveFilter(filter.id)}
-                className={`
-                  px-6 py-2.5 rounded-full text-sm font-medium tracking-wide uppercase
-                  transition-all duration-300 border
-                  ${activeFilter === filter.id
-                    ? 'bg-[var(--primary)] text-black border-[var(--primary)]'
-                    : 'bg-transparent text-white/70 border-white/20 hover:border-[var(--primary)] hover:text-[var(--primary)]'
-                  }
-                `}
+                style={{
+                  padding: isMobile ? '8px 16px' : '10px 24px',
+                  borderRadius: '9999px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase' as const,
+                  border: '1px solid',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s',
+                  backgroundColor: activeFilter === filter.id ? 'var(--primary)' : 'transparent',
+                  color: activeFilter === filter.id ? 'black' : 'rgba(255, 255, 255, 0.7)',
+                  borderColor: activeFilter === filter.id ? 'var(--primary)' : 'rgba(255, 255, 255, 0.2)',
+                }}
               >
                 {filter.label}
               </button>
@@ -200,22 +264,31 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
       </section>
 
       {/* Cars Grid Section */}
-      <section className="relative pb-32 px-6">
-        <div className="max-w-[1200px] mx-auto relative z-10">
+      <section style={{ position: 'relative', paddingBottom: '128px', paddingLeft: '24px', paddingRight: '24px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 10 }}>
           {sortedCars.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+              gap: '24px',
+            }}>
               {sortedCars.map((car, index) => (
                 <CarCard key={car._id} car={car} index={index} />
               ))}
             </div>
           ) : (
             <motion.div
-              className="text-center py-20"
+              style={{ textAlign: 'center', padding: '80px 0' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4 }}
             >
-              <p className="text-white/60 text-lg mb-6">
+              <p style={{
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: '18px',
+                marginBottom: '24px',
+                fontFamily: 'var(--font-body)',
+              }}>
                 No cars found in this category.
               </p>
               <PrimaryButton onClick={() => setModalOpen(true)} size="medium">
@@ -230,36 +303,64 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
 
       {/* Special Request Modal */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="bg-[var(--background)] border-white/10 max-w-md">
+        <DialogContent style={{
+          backgroundColor: 'var(--background)',
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+          maxWidth: '448px',
+        }}>
           <DialogHeader>
-            <DialogTitle className="text-[var(--foreground)] text-2xl font-[var(--font-title)]">
+            <DialogTitle style={{
+              color: 'var(--foreground)',
+              fontSize: '24px',
+              fontFamily: 'var(--font-title)',
+              fontWeight: 600,
+            }}>
               Special Request
             </DialogTitle>
-            <DialogDescription className="text-white/60">
+            <DialogDescription style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
               Can&apos;t find what you&apos;re looking for? Tell us what you need and we&apos;ll source it for you.
             </DialogDescription>
           </DialogHeader>
 
           {formStatus === 'success' ? (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[var(--primary)]/20 flex items-center justify-center">
+            <div style={{ textAlign: 'center', padding: '32px 0' }}>
+              <div style={{
+                width: '64px',
+                height: '64px',
+                margin: '0 auto 24px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(0, 210, 200, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
-              <h4 className="text-xl font-[var(--font-title)] font-semibold text-[var(--foreground)] mb-2">
+              <h4 style={{
+                fontSize: '20px',
+                fontFamily: 'var(--font-title)',
+                fontWeight: 600,
+                color: 'var(--foreground)',
+                marginBottom: '8px',
+              }}>
                 Request Sent!
               </h4>
-              <p className="text-white/60 text-sm">
+              <p style={{
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: '14px',
+                fontFamily: 'var(--font-body)',
+              }}>
                 Thank you for your request. We&apos;ll get back to you shortly.
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}>
               <input type="hidden" name="form_type" value="special_request" />
 
               <div>
-                <label htmlFor="name" className="block text-white/60 text-sm mb-2">
+                <label htmlFor="name" style={labelStyle}>
                   Name
                 </label>
                 <input
@@ -267,13 +368,15 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
                   id="name"
                   name="name"
                   required
-                  className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.1] text-[var(--foreground)] placeholder-white/30 focus:outline-none focus:border-[var(--primary)] transition-colors"
                   placeholder="Your name"
+                  style={inputStyle}
+                  onFocus={(e) => e.currentTarget.style.borderColor = 'var(--primary)'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'}
                 />
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-white/60 text-sm mb-2">
+                <label htmlFor="email" style={labelStyle}>
                   Email
                 </label>
                 <input
@@ -281,41 +384,49 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
                   id="email"
                   name="email"
                   required
-                  className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.1] text-[var(--foreground)] placeholder-white/30 focus:outline-none focus:border-[var(--primary)] transition-colors"
                   placeholder="your@email.com"
+                  style={inputStyle}
+                  onFocus={(e) => e.currentTarget.style.borderColor = 'var(--primary)'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'}
                 />
               </div>
 
               <div>
-                <label htmlFor="phone" className="block text-white/60 text-sm mb-2">
+                <label htmlFor="phone" style={labelStyle}>
                   Phone (optional)
                 </label>
                 <input
                   type="tel"
                   id="phone"
                   name="phone"
-                  className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.1] text-[var(--foreground)] placeholder-white/30 focus:outline-none focus:border-[var(--primary)] transition-colors"
                   placeholder="+44 (0) 123 456 7890"
+                  style={inputStyle}
+                  onFocus={(e) => e.currentTarget.style.borderColor = 'var(--primary)'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'}
                 />
               </div>
 
               <div>
-                <label htmlFor="service" className="block text-white/60 text-sm mb-2">
+                <label htmlFor="service" style={labelStyle}>
                   Service Interest
                 </label>
                 <select
                   id="service"
                   name="service"
-                  className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.1] text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] transition-colors appearance-none cursor-pointer"
                   style={{
+                    ...inputStyle,
+                    appearance: 'none',
+                    cursor: 'pointer',
                     backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'right 12px center',
                     backgroundSize: '20px',
                   }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = 'var(--primary)'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'}
                 >
                   {serviceOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
+                    <option key={option.value} value={option.value} style={{ backgroundColor: '#000' }}>
                       {option.label}
                     </option>
                   ))}
@@ -323,7 +434,7 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
               </div>
 
               <div>
-                <label htmlFor="car_request" className="block text-white/60 text-sm mb-2">
+                <label htmlFor="car_request" style={labelStyle}>
                   What car are you looking for?
                 </label>
                 <textarea
@@ -331,18 +442,24 @@ export default function CarsContent({ cars, categories }: CarsContentProps) {
                   name="car_request"
                   required
                   rows={3}
-                  className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.1] text-[var(--foreground)] placeholder-white/30 focus:outline-none focus:border-[var(--primary)] transition-colors resize-none"
                   placeholder="e.g. Ferrari 488 Spider, Rolls Royce Phantom..."
+                  style={{ ...inputStyle, resize: 'none' }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = 'var(--primary)'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'}
                 />
               </div>
 
               {formStatus === 'error' && (
-                <p className="text-red-400 text-sm">
+                <p style={{
+                  color: '#ff4444',
+                  fontSize: '14px',
+                  fontFamily: 'var(--font-body)',
+                }}>
                   Something went wrong. Please try again.
                 </p>
               )}
 
-              <div className="pt-2">
+              <div style={{ paddingTop: '8px' }}>
                 <PrimaryButton
                   type="submit"
                   size="medium"

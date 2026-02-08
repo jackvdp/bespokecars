@@ -27,7 +27,14 @@ export default function ServiceOverlay({ data, activeIndex }: ServiceOverlayProp
   if (!currentData) return null
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center p-8">
+    <div style={{
+      position: 'absolute',
+      inset: 0,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 'clamp(16px, 3vw, 32px)',
+    }}>
       <AnimatePresence mode="wait">
         <motion.div
           key={activeIndex}
@@ -42,8 +49,8 @@ export default function ServiceOverlay({ data, activeIndex }: ServiceOverlayProp
             position: 'relative',
             maxWidth: '900px',
             width: '100%',
-            padding: '48px',
-            borderRadius: '32px',
+            padding: 'clamp(20px, 4vw, 48px)',
+            borderRadius: 'clamp(16px, 3vw, 32px)',
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
             overflow: 'hidden',
@@ -93,7 +100,7 @@ export default function ServiceOverlay({ data, activeIndex }: ServiceOverlayProp
           {/* Content */}
           <div style={{ position: 'relative', zIndex: 1 }}>
             {/* Header */}
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <div style={{ textAlign: 'center', marginBottom: 'clamp(24px, 3vw, 40px)' }}>
               <p
                 style={{
                   color: 'var(--primary)',
@@ -124,7 +131,7 @@ export default function ServiceOverlay({ data, activeIndex }: ServiceOverlayProp
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
                 gap: '24px',
               }}
             >

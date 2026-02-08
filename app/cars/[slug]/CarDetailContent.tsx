@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Navbar from '@/components/Navbar'
@@ -36,6 +36,15 @@ interface CarDetailContentProps {
 }
 
 export default function CarDetailContent({ car }: CarDetailContentProps) {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
   const images = car.images || []
   const heroImage = images[0] ? urlFor(images[0]).width(1920).height(1080).url() : undefined
   const logoUrl = car.logo ? urlFor(car.logo).width(200).height(200).url() : undefined
@@ -118,7 +127,7 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
   }
 
   return (
-    <main className="bg-[var(--background)]">
+    <main style={{ backgroundColor: 'var(--background)' }}>
       <Navbar backHref="/cars" backLabel="All Cars" />
 
       {heroImage ? (
@@ -134,26 +143,45 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
         />
       ) : (
         <section style={{ position: 'relative', paddingTop: '160px', paddingBottom: '80px', paddingLeft: '24px', paddingRight: '24px' }}>
-          <div className="max-w-[1200px] mx-auto text-center">
+          <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
             {logoUrl && (
               <motion.div
-                className="mx-auto mb-8 w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-lg"
+                style={{
+                  margin: '0 auto 32px',
+                  width: '96px',
+                  height: '96px',
+                  borderRadius: '50%',
+                  backgroundColor: 'white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+                }}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               >
-                <div className="relative w-16 h-16">
+                <div style={{ position: 'relative', width: '64px', height: '64px' }}>
                   <Image
                     src={logoUrl}
                     alt=""
                     fill
-                    className="object-contain"
+                    style={{ objectFit: 'contain' }}
                   />
                 </div>
               </motion.div>
             )}
             <motion.span
-              className="text-[var(--primary)] text-sm font-medium tracking-[0.2em] uppercase mb-6 block"
+              style={{
+                color: 'var(--primary)',
+                fontSize: '14px',
+                fontWeight: 500,
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase' as const,
+                marginBottom: '24px',
+                display: 'block',
+                fontFamily: 'var(--font-body)',
+              }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -161,7 +189,14 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
               {car.category?.title || 'Luxury Vehicle'}
             </motion.span>
             <motion.h1
-              className="text-4xl md:text-5xl lg:text-6xl font-[var(--font-title)] font-semibold tracking-tight text-[var(--foreground)] mb-8"
+              style={{
+                fontSize: 'clamp(32px, 5vw, 56px)',
+                fontFamily: 'var(--font-title)',
+                fontWeight: 600,
+                letterSpacing: '-0.02em',
+                color: 'var(--foreground)',
+                marginBottom: '32px',
+              }}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
@@ -182,18 +217,33 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
       )}
 
       {/* Description Section */}
-      <section className="relative py-20 px-6">
-        <div className="max-w-[800px] mx-auto relative z-10">
+      <section style={{
+        position: 'relative',
+        padding: isMobile ? '48px 16px' : '80px 24px',
+      }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative', zIndex: 10 }}>
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           >
-            <h2 className="text-3xl md:text-4xl font-[var(--font-title)] font-semibold tracking-tight text-[var(--foreground)] mb-6">
+            <h2 style={{
+              fontSize: 'clamp(28px, 4vw, 40px)',
+              fontFamily: 'var(--font-title)',
+              fontWeight: 600,
+              letterSpacing: '-0.02em',
+              color: 'var(--foreground)',
+              marginBottom: '24px',
+            }}>
               {car.name}
             </h2>
-            <p className="text-white/60 text-lg leading-relaxed">
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.6)',
+              fontSize: '18px',
+              lineHeight: 1.6,
+              fontFamily: 'var(--font-body)',
+            }}>
               {car.description || defaultDescription}
             </p>
           </motion.div>
@@ -232,16 +282,17 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
               {/* Price columns */}
               <div style={{
                 display: 'flex',
+                flexDirection: isMobile ? 'column' : 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '0',
-                flexWrap: 'wrap',
               }}>
                 {/* Daily */}
                 {car.priceDaily && (
                   <>
                     <div style={{
-                      flex: '1 1 200px',
+                      flex: isMobile ? undefined : '1 1 200px',
+                      width: isMobile ? '100%' : undefined,
                       textAlign: 'center',
                       padding: '16px 24px',
                     }}>
@@ -266,7 +317,7 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
                         £{car.priceDaily.toLocaleString()}
                       </p>
                     </div>
-                    {(car.priceWeekend || car.priceWeekly) && (
+                    {!isMobile && (car.priceWeekend || car.priceWeekly) && (
                       <div style={{
                         width: '1px',
                         height: '40px',
@@ -282,7 +333,8 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
                 {car.priceWeekend && (
                   <>
                     <div style={{
-                      flex: '1 1 200px',
+                      flex: isMobile ? undefined : '1 1 200px',
+                      width: isMobile ? '100%' : undefined,
                       textAlign: 'center',
                       padding: '16px 24px',
                     }}>
@@ -307,7 +359,7 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
                         £{car.priceWeekend.toLocaleString()}
                       </p>
                     </div>
-                    {car.priceWeekly && (
+                    {!isMobile && car.priceWeekly && (
                       <div style={{
                         width: '1px',
                         height: '40px',
@@ -322,7 +374,8 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
                 {/* Weekly */}
                 {car.priceWeekly && (
                   <div style={{
-                    flex: '1 1 200px',
+                    flex: isMobile ? undefined : '1 1 200px',
+                    width: isMobile ? '100%' : undefined,
                     textAlign: 'center',
                     padding: '16px 24px',
                   }}>
@@ -367,12 +420,19 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
 
       {/* Gallery Section */}
       {galleryImages.length > 0 && (
-        <section className="relative pb-32 px-6">
-          <div className="max-w-[1200px] mx-auto relative z-10">
+        <section style={{ position: 'relative', paddingBottom: '128px', paddingLeft: '24px', paddingRight: '24px' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 10 }}>
             {/* Large Image */}
             {galleryImages[0] && (
               <motion.div
-                className="relative w-full aspect-[21/9] rounded-3xl overflow-hidden mb-6"
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  aspectRatio: '21/9',
+                  borderRadius: '24px',
+                  overflow: 'hidden',
+                  marginBottom: '24px',
+                }}
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-100px' }}
@@ -383,18 +443,27 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
                   alt={`${car.name} gallery 1`}
                   fill
                   loading="lazy"
-                  className="object-cover"
+                  style={{ objectFit: 'cover' }}
                 />
               </motion.div>
             )}
 
             {/* Three Images Row */}
             {galleryImages.length > 1 && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+                gap: '24px',
+              }}>
                 {galleryImages.slice(1, 4).map((image, index) => (
                   <motion.div
                     key={index}
-                    className="relative aspect-[4/3] rounded-2xl overflow-hidden"
+                    style={{
+                      position: 'relative',
+                      aspectRatio: '4/3',
+                      borderRadius: '16px',
+                      overflow: 'hidden',
+                    }}
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: '-50px' }}
@@ -409,7 +478,7 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
                       alt={`${car.name} gallery ${index + 2}`}
                       fill
                       loading="lazy"
-                      className="object-cover"
+                      style={{ objectFit: 'cover' }}
                     />
                   </motion.div>
                 ))}
@@ -420,18 +489,34 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
       )}
 
       {/* CTA Section */}
-      <section className="relative py-20 px-6">
-        <div className="max-w-[800px] mx-auto text-center relative z-10">
+      <section style={{
+        position: 'relative',
+        padding: isMobile ? '48px 16px' : '80px 24px',
+      }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 10 }}>
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           >
-            <h2 className="text-3xl md:text-4xl font-[var(--font-title)] font-semibold tracking-tight text-[var(--foreground)] mb-4">
+            <h2 style={{
+              fontSize: 'clamp(28px, 4vw, 40px)',
+              fontFamily: 'var(--font-title)',
+              fontWeight: 600,
+              letterSpacing: '-0.02em',
+              color: 'var(--foreground)',
+              marginBottom: '16px',
+            }}>
               Ready to experience the {car.name}?
             </h2>
-            <p className="text-white/60 text-lg mb-8">
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.6)',
+              fontSize: '18px',
+              marginBottom: '32px',
+              fontFamily: 'var(--font-body)',
+              lineHeight: 1.6,
+            }}>
               Contact us today to book this exceptional vehicle for your next event.
             </p>
             <PrimaryButton onClick={() => setModalOpen(true)} size="large">
@@ -445,12 +530,21 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
 
       {/* Booking Modal */}
       <Dialog open={modalOpen} onOpenChange={handleModalChange}>
-        <DialogContent className="bg-[var(--background)] border-white/10 max-w-md">
+        <DialogContent style={{
+          backgroundColor: 'var(--background)',
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+          maxWidth: '448px',
+        }}>
           <DialogHeader>
-            <DialogTitle className="text-[var(--foreground)] text-2xl font-[var(--font-title)]">
+            <DialogTitle style={{
+              color: 'var(--foreground)',
+              fontSize: '24px',
+              fontFamily: 'var(--font-title)',
+              fontWeight: 600,
+            }}>
               Book the {car.name}
             </DialogTitle>
-            <DialogDescription className="text-white/60">
+            <DialogDescription style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
               Select your dates and service to request a booking.
             </DialogDescription>
           </DialogHeader>
@@ -494,7 +588,7 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
               <input type="hidden" name="car" value={car.name} />
 
               {/* Date fields side by side */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
                 <div>
                   <label htmlFor="booking-start-date" style={labelStyle}>
                     Start Date
