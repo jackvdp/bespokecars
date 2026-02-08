@@ -45,6 +45,18 @@ const services = [
     description: 'Experience true luxury with our professional chauffeur service. Our expertly trained drivers provide discreet, reliable transportation for business meetings, special occasions, and VIP experiences. Sit back and enjoy the journey while we handle every detail.',
     image: '/images/services/chauffer.avif',
   },
+  {
+    id: 'security',
+    title: 'Close Protection',
+    description: 'Discreet, secure transportation with trained security-cleared drivers for clients requiring enhanced security. Our close protection service combines luxury vehicles with professional security personnel, ensuring complete peace of mind for high-profile individuals and VIP clients.',
+    image: '/images/services/corporate.avif',
+  },
+  {
+    id: 'leasing',
+    title: 'Vehicle Leasing',
+    description: 'Flexible leasing options tailored to your individual circumstances — no credit checks required. Drive your dream car on your terms with our straightforward, hassle-free leasing plans designed to get you behind the wheel without the usual barriers.',
+    image: '/images/services/selfdrive.jpg',
+  },
 ]
 
 export default function ServicesPage() {

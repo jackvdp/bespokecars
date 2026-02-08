@@ -6,6 +6,8 @@ export const serviceOptions = [
   { value: 'self-drive', label: 'Self Drive Experience' },
   { value: 'corporate', label: 'Corporate & Event Hire' },
   { value: 'chauffeur', label: 'Private Chauffeur Services' },
+  { value: 'security', label: 'Close Protection' },
+  { value: 'leasing', label: 'Vehicle Leasing' },
   { value: 'other', label: 'Other' },
 ] as const
 
