@@ -120,9 +120,8 @@ export default function CarCard({ car, index = 0 }: CarCardProps) {
               width: '44px',
               height: '44px',
               flexShrink: 0,
-              backgroundColor: 'rgba(255, 255, 255, 0.95)',
               borderRadius: '10px',
-              padding: '6px',
+              overflow: 'hidden',
             }}
           >
             <Image
@@ -131,7 +130,7 @@ export default function CarCard({ car, index = 0 }: CarCardProps) {
               fill
               loading="lazy"
               sizes="44px"
-              style={{ objectFit: 'contain', padding: '6px' }}
+              style={{ objectFit: 'cover' }}
             />
           </div>
         )}
