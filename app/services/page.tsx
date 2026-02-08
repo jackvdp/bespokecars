@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import PrimaryButton from '@/components/PrimaryButton'
@@ -69,7 +70,7 @@ export default function ServicesPage() {
         title="Premium luxury vehicles and white-glove service for life's most significant occasions"
         description="Trusted by discerning clients across the UK for over two decades."
         buttonText="Book Our Service"
-        buttonHref="/contact"
+        buttonHref="/contact#contact-details"
         backgroundImage="/images/services/carglove.jpeg"
         backgroundAlt="Ferrari in London"
       />
@@ -111,43 +112,45 @@ export default function ServicesPage() {
         <div className="max-w-[1200px] mx-auto relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {services.map((service, index) => (
-              <motion.div
-                key={service.id}
-                id={service.id}
-                className="group relative rounded-3xl overflow-hidden bg-white/[0.03] border border-white/[0.08] hover:border-[var(--primary)] transition-colors duration-300 scroll-mt-24"
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{
-                  duration: 0.6,
-                  delay: index * 0.1,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                {/* Image */}
-                <div className="relative h-64 overflow-hidden">
-                  <Image
-                    src={service.image}
-                    alt={service.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                </div>
+              <Link key={service.id} href={`/contact#contact-details`} style={{ textDecoration: 'none' }}>
+                <motion.div
+                  id={service.id}
+                  className="group relative rounded-3xl overflow-hidden bg-white/[0.03] border border-white/[0.08] hover:border-[var(--primary)] transition-colors duration-300 scroll-mt-24"
+                  style={{ cursor: 'pointer', height: '100%' }}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-50px' }}
+                  transition={{
+                    duration: 0.6,
+                    delay: index * 0.1,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {/* Image */}
+                  <div className="relative h-64 overflow-hidden">
+                    <Image
+                      src={service.image}
+                      alt={service.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  </div>
 
-                {/* Content */}
-                <div className="p-8">
-                  <h3 className="text-xl md:text-2xl font-[var(--font-title)] font-semibold tracking-tight text-[var(--foreground)] mb-4">
-                    {service.title}
-                  </h3>
-                  <p className="text-white/50 text-sm md:text-base leading-relaxed">
-                    {service.description}
-                  </p>
-                </div>
+                  {/* Content */}
+                  <div className="p-8">
+                    <h3 className="text-xl md:text-2xl font-[var(--font-title)] font-semibold tracking-tight text-[var(--foreground)] mb-4">
+                      {service.title}
+                    </h3>
+                    <p className="text-white/50 text-sm md:text-base leading-relaxed">
+                      {service.description}
+                    </p>
+                  </div>
 
-                {/* Accent line */}
-                <div className="absolute top-0 left-8 right-8 h-0.5 bg-gradient-to-r from-transparent via-[var(--primary)] to-transparent opacity-0 group-hover:opacity-60 transition-opacity duration-300" />
-              </motion.div>
+                  {/* Accent line */}
+                  <div className="absolute top-0 left-8 right-8 h-0.5 bg-gradient-to-r from-transparent via-[var(--primary)] to-transparent opacity-0 group-hover:opacity-60 transition-opacity duration-300" />
+                </motion.div>
+              </Link>
             ))}
           </div>
         </div>
@@ -196,7 +199,7 @@ export default function ServicesPage() {
             <p className="text-white/60 text-base md:text-lg leading-relaxed mb-10 max-w-2xl mx-auto">
               Book one of our luxury vehicles for your special day, arrange professional chauffeur services, or let us source that specific car you&apos;ve been searching for through our extensive network.
             </p>
-            <PrimaryButton href="/contact" size="large">
+            <PrimaryButton href="/contact#contact-details" size="large">
               Contact Us
             </PrimaryButton>
           </motion.div>

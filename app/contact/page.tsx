@@ -54,7 +54,7 @@ export default function ContactPage() {
       />
 
       {/* Contact Details & Form Section */}
-      <section id="contact-details" className="relative py-[120px] px-6">
+      <section id="contact-details" className="relative py-[120px] px-6" style={{ scrollMarginTop: '80px' }}>
         <SectionBackground glowPosition="both" gridFadeDirection="down" />
 
         <div className="max-w-[1200px] mx-auto relative z-10">
