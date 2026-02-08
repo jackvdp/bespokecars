@@ -17,8 +17,8 @@ async function getCars() {
       name,
       slug,
       category->{ title },
-      logoUrl,
-      imageUrls
+      logo,
+      images
     }
   `, { ids: carIds })
 }

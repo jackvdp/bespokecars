@@ -2,14 +2,16 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import { urlFor } from '@/sanity/lib/image'
+import type { SanityImageSource } from '@sanity/image-url/lib/types/types'
 
 export interface Car {
   _id: string
   name: string
   slug: { current: string }
   category: { title: string } | null
-  logoUrl: string | null
-  imageUrls: string[] | null
+  logo: SanityImageSource | null
+  images: SanityImageSource[] | null
 }
 
 interface CarCardProps {
@@ -54,9 +56,9 @@ export default function CarCard({ car, index = 0 }: CarCardProps) {
           overflow: 'hidden',
         }}
       >
-        {car.imageUrls && car.imageUrls[0] ? (
+        {car.images && car.images[0] ? (
           <Image
-            src={car.imageUrls[0]}
+            src={urlFor(car.images[0]).width(800).height(500).url()}
             alt={car.name}
             fill
             loading="lazy"
@@ -91,7 +93,7 @@ export default function CarCard({ car, index = 0 }: CarCardProps) {
         }}
       >
         {/* Brand Logo */}
-        {car.logoUrl && (
+        {car.logo && (
           <div
             style={{
               position: 'relative',
@@ -104,7 +106,7 @@ export default function CarCard({ car, index = 0 }: CarCardProps) {
             }}
           >
             <Image
-              src={car.logoUrl}
+              src={urlFor(car.logo).width(88).height(88).url()}
               alt=""
               fill
               loading="lazy"

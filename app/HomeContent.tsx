@@ -9,15 +9,7 @@ import Navbar from "@/components/Navbar";
 import HowItWorks from "@/components/HowItWorks";
 import FleetContactSection from "@/components/FleetContactSection";
 import Footer from "@/components/Footer";
-
-interface Car {
-  _id: string
-  name: string
-  slug: { current: string }
-  category: { title: string } | null
-  logoUrl: string | null
-  imageUrls: string[] | null
-}
+import { Car } from "@/components/CarCard";
 
 interface HomeContentProps {
   cars: Car[]

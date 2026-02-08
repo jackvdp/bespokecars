@@ -14,8 +14,8 @@ async function getCar(slug: string) {
       slug,
       description,
       category->{ title, slug },
-      logoUrl,
-      imageUrls
+      logo,
+      images
     }
   `, { slug })
 }

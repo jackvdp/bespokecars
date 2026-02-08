@@ -6,6 +6,8 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import PageHero from '@/components/PageHero'
 import PrimaryButton from '@/components/PrimaryButton'
+import { urlFor } from '@/sanity/lib/image'
+import type { SanityImageSource } from '@sanity/image-url/lib/types/types'
 
 interface Car {
   _id: string
@@ -13,8 +15,8 @@ interface Car {
   slug: { current: string }
   description: string | null
   category: { title: string; slug: { current: string } } | null
-  logoUrl: string | null
-  imageUrls: string[] | null
+  logo: SanityImageSource | null
+  images: SanityImageSource[] | null
 }
 
 interface CarDetailContentProps {
@@ -22,8 +24,9 @@ interface CarDetailContentProps {
 }
 
 export default function CarDetailContent({ car }: CarDetailContentProps) {
-  const images = car.imageUrls || []
-  const heroImage = images[0]
+  const images = car.images || []
+  const heroImage = images[0] ? urlFor(images[0]).width(1920).height(1080).url() : undefined
+  const logoUrl = car.logo ? urlFor(car.logo).width(200).height(200).url() : undefined
   const galleryImages = images.slice(1, 5) // Get images 2-5 for gallery
 
   const defaultDescription = `Experience the ultimate in luxury and performance with the ${car.name}. This exceptional vehicle combines stunning design with exhilarating power, making every journey an unforgettable experience.`
@@ -40,7 +43,7 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
         buttonHref="/contact"
         backgroundImage={heroImage}
         backgroundAlt={car.name}
-        logoUrl={car.logoUrl || undefined}
+        logoUrl={logoUrl}
       />
 
       {/* Description Section */}
@@ -76,7 +79,7 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               >
                 <Image
-                  src={galleryImages[0]}
+                  src={urlFor(galleryImages[0]).width(1680).height(720).url()}
                   alt={`${car.name} gallery 1`}
                   fill
                   loading="lazy"
@@ -102,7 +105,7 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
                     }}
                   >
                     <Image
-                      src={image}
+                      src={urlFor(image).width(560).height(420).url()}
                       alt={`${car.name} gallery ${index + 2}`}
                       fill
                       loading="lazy"

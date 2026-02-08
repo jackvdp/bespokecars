@@ -8,8 +8,8 @@ async function getCars() {
       name,
       slug,
       category->{ title, slug },
-      logoUrl,
-      imageUrls
+      logo,
+      images
     }
   `)
 }
