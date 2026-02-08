@@ -38,7 +38,7 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
       <PageHero
         label={car.category?.title || 'Luxury Vehicle'}
         title={car.name}
-        description={car.description || defaultDescription}
+        description=""
         buttonText="Book Now"
         buttonHref="/contact"
         backgroundImage={heroImage}
