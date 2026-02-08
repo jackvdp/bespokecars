@@ -35,16 +35,65 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
     <main className="bg-[var(--background)]">
       <Navbar />
 
-      <PageHero
-        label={car.category?.title || 'Luxury Vehicle'}
-        title={car.name}
-        description=""
-        buttonText="Book Now"
-        buttonHref="/contact"
-        backgroundImage={heroImage}
-        backgroundAlt={car.name}
-        logoUrl={logoUrl}
-      />
+      {heroImage ? (
+        <PageHero
+          label={car.category?.title || 'Luxury Vehicle'}
+          title={car.name}
+          description=""
+          buttonText="Book Now"
+          buttonHref="/contact"
+          backgroundImage={heroImage}
+          backgroundAlt={car.name}
+          logoUrl={logoUrl}
+        />
+      ) : (
+        <section style={{ position: 'relative', paddingTop: '160px', paddingBottom: '80px', paddingLeft: '24px', paddingRight: '24px' }}>
+          <div className="max-w-[1200px] mx-auto text-center">
+            {logoUrl && (
+              <motion.div
+                className="mx-auto mb-8 w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-lg"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="relative w-16 h-16">
+                  <Image
+                    src={logoUrl}
+                    alt=""
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              </motion.div>
+            )}
+            <motion.span
+              className="text-[var(--primary)] text-sm font-medium tracking-[0.2em] uppercase mb-6 block"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {car.category?.title || 'Luxury Vehicle'}
+            </motion.span>
+            <motion.h1
+              className="text-4xl md:text-5xl lg:text-6xl font-[var(--font-title)] font-semibold tracking-tight text-[var(--foreground)] mb-8"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {car.name}
+            </motion.h1>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <PrimaryButton href="/contact" size="large">
+                Book Now
+              </PrimaryButton>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Description Section */}
       <section className="relative py-20 px-6">
