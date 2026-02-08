@@ -14,6 +14,8 @@ import {schema} from './sanity/schemaTypes'
 import {structure} from './sanity/structure'
 
 export default defineConfig({
+  name: 'bespoke-cars',
+  title: 'Bespoke Cars',
   basePath: '/studio',
   projectId,
   dataset,
