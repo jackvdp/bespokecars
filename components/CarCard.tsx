@@ -120,6 +120,7 @@ export default function CarCard({ car, index = 0 }: CarCardProps) {
               width: '44px',
               height: '44px',
               flexShrink: 0,
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
               borderRadius: '10px',
               overflow: 'hidden',
             }}
