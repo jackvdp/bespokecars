@@ -44,7 +44,7 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
   const defaultDescription = `Experience the ultimate in luxury and performance with the ${car.name}. This exceptional vehicle combines stunning design with exhilarating power, making every journey an unforgettable experience.`
 
   const [modalOpen, setModalOpen] = useState(false)
-  const [formStatus, setFormStatus] = useState<'idle' | 'success'>('idle')
+  const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
 
@@ -57,9 +57,34 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
     return days * car.priceDaily
   }, [startDate, endDate, car.priceDaily])
 
-  const handleBookingSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleBookingSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setFormStatus('success')
+    setFormStatus('submitting')
+
+    const formData = new FormData(e.currentTarget)
+
+    try {
+      const res = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          carId: car._id,
+          carName: car.name,
+          startDate: formData.get('start_date'),
+          endDate: formData.get('end_date'),
+          service: formData.get('service'),
+          name: formData.get('name'),
+          email: formData.get('email'),
+          phone: formData.get('phone'),
+          indicativePrice: indicativePrice,
+        }),
+      })
+
+      if (!res.ok) throw new Error('Failed to submit')
+      setFormStatus('success')
+    } catch {
+      setFormStatus('error')
+    }
   }
 
   const handleModalChange = (open: boolean) => {
@@ -634,10 +659,22 @@ export default function CarDetailContent({ car }: CarDetailContentProps) {
                 </div>
               )}
 
+              {/* Error message */}
+              {formStatus === 'error' && (
+                <p style={{
+                  color: '#ff4444',
+                  fontSize: '14px',
+                  fontFamily: 'var(--font-body)',
+                  textAlign: 'center',
+                }}>
+                  Something went wrong. Please try again.
+                </p>
+              )}
+
               {/* Submit */}
               <div style={{ paddingTop: '8px' }}>
-                <PrimaryButton type="submit" size="medium">
-                  Request Booking
+                <PrimaryButton type="submit" size="medium" disabled={formStatus === 'submitting'}>
+                  {formStatus === 'submitting' ? 'Sending...' : 'Request Booking'}
                 </PrimaryButton>
               </div>
             </form>
