@@ -592,14 +592,27 @@ When creating a new section:
 ## Coding Standards
 
 ### Styling Approach
-**Always use inline `style={{}}` objects for styling.** Tailwind CSS classes do not work in this project — they are not applied at runtime. Use inline styles for all layout, spacing, colours, and typography.
+**Always use inline `style={{}}` objects for styling.** The project linter automatically converts Tailwind `className` props on plain HTML/JSX elements to inline styles, so Tailwind classes on regular elements (e.g. `<div>`, `<section>`, `<p>`) will not work as expected.
 
 ```tsx
-// ✅ Good - use inline styles
+// ✅ Good - use inline styles on regular elements
 <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', pointerEvents: 'none' }} />
 
-// ❌ Avoid - Tailwind classes (do not work)
+// ❌ Avoid - Tailwind classes on regular elements (linter rewrites these)
 <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+```
+
+**Exception: shadcn/ui components (e.g. `DialogContent`, `DialogHeader`, `DialogTitle`).** These accept a `className` prop that gets merged via `cn()` / `twMerge` inside the component. Tailwind classes passed this way DO work because they end up on the component's internal element, which the linter does not rewrite. Use `className` on these components for responsive overrides that inline styles can't handle (e.g. `sm:` breakpoints).
+
+```tsx
+// ✅ Good - Tailwind className on shadcn/ui components for responsive behaviour
+<DialogContent
+  className="top-0 left-0 max-w-full h-full rounded-none sm:top-1/2 sm:left-1/2 sm:max-w-md sm:h-auto sm:rounded-lg"
+  style={{ backgroundColor: 'var(--background)' }}
+/>
+
+// ✅ Good - inline style on shadcn/ui components for non-responsive values
+<DialogContent style={{ backgroundColor: 'var(--background)', borderColor: 'rgba(255, 255, 255, 0.1)' }} />
 ```
 
 ### CSS Variables
