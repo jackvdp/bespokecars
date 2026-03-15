@@ -4,7 +4,8 @@
       "Bash(npx shadcn@latest add dialog:*)",
       "Bash(npx tsc:*)",
       "Bash(find:*)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(curl:*)"
     ]
   }
 }

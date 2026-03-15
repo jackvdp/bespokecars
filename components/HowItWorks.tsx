@@ -175,7 +175,7 @@ function WhyChoosePanel({ animateOnScroll = true }: { animateOnScroll?: boolean 
           transition={{ duration: 0.6, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
         >
           <Image
-            src="/images/cars/bentley.jpeg"
+            src="/images/cars/ferrarilondon.jpeg"
             alt="Bentley"
             fill
             style={{ objectFit: 'cover' }}
@@ -450,7 +450,7 @@ function DesktopLayout() {
                 {/* Second Image */}
                 <div className="relative h-[450px] rounded-3xl overflow-hidden">
                   <Image
-                    src="/images/cars/bentley.jpeg"
+                    src="/images/cars/ferrarilondon.jpeg"
                     alt="Bentley"
                     fill
                     style={{ objectFit: 'cover' }}

@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import PrimaryButton from './PrimaryButton'
 
 const navLinks = [
-  { name: 'Fleet', href: '/cars' },
+  { name: 'Cars', href: '/cars' },
   { name: 'Services', href: '/services' },
   { name: 'About', href: '/about' },
   { name: 'Contact', href: '/contact' },
