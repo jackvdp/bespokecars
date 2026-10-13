@@ -97,9 +97,15 @@ export default function LoadingScreen({ isLoading, progress }: LoadingScreenProp
     }
   }, [isComplete])
 
-  const revealMask = useMotionTemplate`radial-gradient(circle at 50% 50%, transparent calc(${reveal}vmax - 2px), #000 ${reveal}vmax)`
+  // No mask until the reveal starts - Safari draws a radial gradient whose stops all sit at
+  // zero as fully transparent, which would hide the whole loader
+  const revealMask = useTransform(reveal, (radius) =>
+    radius > 0
+      ? `radial-gradient(circle at 50% 50%, transparent ${radius}vmax, #000 calc(${radius}vmax + 2px))`
+      : 'none'
+  )
   // A bright neon line on the edge of the opening, with a soft glow behind it
-  const revealEdge = useMotionTemplate`radial-gradient(circle at 50% 50%, transparent calc(${reveal}vmax - 2px), rgba(255, 255, 255, 0.9) ${reveal}vmax, rgba(0, 210, 200, 0.9) calc(${reveal}vmax + 3px), rgba(0, 210, 200, 0.25) calc(${reveal}vmax + 14px), rgba(0, 210, 200, 0) calc(${reveal}vmax + 90px))`
+  const revealEdge = useMotionTemplate`radial-gradient(circle at 50% 50%, transparent ${reveal}vmax, rgba(255, 255, 255, 0.9) calc(${reveal}vmax + 2px), rgba(0, 210, 200, 0.9) calc(${reveal}vmax + 5px), rgba(0, 210, 200, 0.25) calc(${reveal}vmax + 16px), rgba(0, 210, 200, 0) calc(${reveal}vmax + 92px))`
   const revealEdgeOpacity = useTransform(reveal, [0, 4, 55, 80], [0, 1, 1, 0])
 
   const headAngle = useTransform(dial, (value) => START_ANGLE + SWEEP * value)
