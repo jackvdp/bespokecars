@@ -1,89 +1,34 @@
 'use client'
 
-import { useRef, useEffect, useState, useCallback } from 'react'
+import { useRef, useEffect } from 'react'
 import { useScroll, MotionValue } from 'framer-motion'
+import { usePreloadedVideo } from '@/hooks/usePreloadedVideo'
 
 interface ScrollVideoSimpleProps {
   src: string
   scrollHeight?: string
   children?: React.ReactNode | ((scrollYProgress: MotionValue<number>) => React.ReactNode)
-  lazy?: boolean
-  onLoadStart?: () => void
+  /** Hold the download back until true (e.g. until the hero video has finished downloading) */
+  enabled?: boolean
 }
 
 export default function ScrollVideoSimple({ 
   src, 
   scrollHeight = '300vh',
   children,
-  lazy = false,
-  onLoadStart
+  enabled = true
 }: ScrollVideoSimpleProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
-  const [isVideoReady, setIsVideoReady] = useState(false)
-  const [shouldLoad, setShouldLoad] = useState(!lazy)
-  const videoDurationRef = useRef(0)
+
+  // The video is downloaded in full before it's shown, so scrubbing never waits on the network
+  const { videoSrc, isReady: isVideoReady, scrubTo } = usePreloadedVideo(videoRef, src, { enabled })
 
   // Content timeline: only when sticky container is fully in view (for children)
   const { scrollYProgress: contentProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end end'],
   })
-
-  // Trigger lazy load when ready
-  useEffect(() => {
-    if (lazy && !shouldLoad) {
-      onLoadStart?.()
-      setShouldLoad(true)
-    }
-  }, [lazy, shouldLoad, onLoadStart])
-
-  // Handle video ready
-  useEffect(() => {
-    if (!shouldLoad) return
-
-    const video = videoRef.current
-    if (!video) return
-
-    const handleLoadedMetadata = () => {
-      videoDurationRef.current = video.duration
-      video.pause()
-      video.currentTime = 0
-      setIsVideoReady(true)
-    }
-
-    // Also listen for canplay as fallback for mobile
-    const handleCanPlay = () => {
-      if (!isVideoReady) {
-        handleLoadedMetadata()
-      }
-    }
-
-    video.addEventListener('loadedmetadata', handleLoadedMetadata)
-    video.addEventListener('canplay', handleCanPlay)
-
-    // Check if already loaded
-    if (video.readyState >= 2) {
-      handleLoadedMetadata()
-    } else {
-      // Force load on mobile - browsers ignore preload="auto"
-      video.load()
-
-      // Attempt to play (muted videos can autoplay on mobile)
-      // This triggers the browser to actually load the video
-      video.play().then(() => {
-        video.pause()
-        video.currentTime = 0
-      }).catch(() => {
-        // Play failed, but load() should still work
-      })
-    }
-
-    return () => {
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata)
-      video.removeEventListener('canplay', handleCanPlay)
-    }
-  }, [shouldLoad, isVideoReady])
 
   // Manual scroll handler for video sync (more reliable than Framer Motion's onChange)
   useEffect(() => {
@@ -92,9 +37,8 @@ export default function ScrollVideoSimple({
     let rafId: number
 
     const updateVideoFrame = () => {
-      const video = videoRef.current
       const container = containerRef.current
-      if (!video || !container || !videoDurationRef.current) return
+      if (!container) return
 
       const rect = container.getBoundingClientRect()
       const containerHeight = container.offsetHeight
@@ -108,10 +52,7 @@ export default function ScrollVideoSimple({
       const videoProgress = Math.min(Math.max(videoScrolled / totalVideoScrollDistance, 0), 1)
       
       // Update video time
-      const targetTime = videoProgress * videoDurationRef.current
-      if (!isNaN(targetTime) && isFinite(targetTime)) {
-        video.currentTime = targetTime
-      }
+      scrubTo(videoProgress)
     }
 
     const handleScroll = () => {
@@ -132,7 +73,7 @@ export default function ScrollVideoSimple({
       window.removeEventListener('scroll', handleScroll)
       cancelAnimationFrame(rafId)
     }
-  }, [isVideoReady])
+  }, [isVideoReady, scrubTo])
 
   return (
     <div
@@ -152,14 +93,13 @@ export default function ScrollVideoSimple({
           overflow: 'hidden',
         }}
       >
-        {/* Video */}
-        {shouldLoad && (
-          <video
-            ref={videoRef}
-            src={src}
-            muted
-            playsInline
-            preload="auto"
+        {/* Video - fades in once fully downloaded */}
+        <video
+          ref={videoRef}
+          src={videoSrc ?? undefined}
+          muted
+          playsInline
+          preload="auto"
           style={{
             position: 'absolute',
             top: '50%',
@@ -170,9 +110,10 @@ export default function ScrollVideoSimple({
             width: 'auto',
             height: 'auto',
             objectFit: 'cover',
+            opacity: isVideoReady ? 1 : 0,
+            transition: 'opacity 0.6s ease-out',
           }}
-          />
-        )}
+        />
 
         {/* Dark overlay */}
         <div

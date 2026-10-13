@@ -5,52 +5,36 @@ import { useEffect, useState } from 'react'
 
 interface LoadingScreenProps {
   isLoading: boolean
+  /** Download progress from 0 to 1 */
+  progress: number
 }
 
-export default function LoadingScreen({ isLoading }: LoadingScreenProps) {
-  const [progress, setProgress] = useState(0)
+export default function LoadingScreen({ isLoading, progress }: LoadingScreenProps) {
   const [shouldShow, setShouldShow] = useState(true)
+  const percent = Math.round((isLoading ? progress : 1) * 100)
 
-  // Handle progress animation while loading
-  useEffect(() => {
-    if (!isLoading) return
-
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 90) return 90
-        return prev + Math.random() * 15
-      })
-    }, 200)
-
-    return () => clearInterval(interval)
-  }, [isLoading])
-
-  // Handle completion when loading finishes
+  // Dismiss once loading finishes, leaving time for the bar to reach 100%
   useEffect(() => {
     if (isLoading) return
 
-    // Quickly animate to 100%
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) return 100
-        return Math.min(100, prev + 5)
-      })
-    }, 30)
-
-    // Dismiss after animation completes
     const dismissTimeout = setTimeout(() => {
-      clearInterval(interval)
-      setProgress(100)
-      setTimeout(() => {
-        setShouldShow(false)
-      }, 400)
-    }, 300)
+      setShouldShow(false)
+    }, 700)
+
+    return () => clearTimeout(dismissTimeout)
+  }, [isLoading])
+
+  // Stop the page being scrolled behind the loader before the video is ready
+  useEffect(() => {
+    if (!shouldShow) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
 
     return () => {
-      clearInterval(interval)
-      clearTimeout(dismissTimeout)
+      document.body.style.overflow = previousOverflow
     }
-  }, [isLoading])
+  }, [shouldShow])
 
   return (
     <AnimatePresence>
@@ -224,6 +208,8 @@ export default function LoadingScreen({ isLoading }: LoadingScreenProps) {
               {/* Dynamic loading indicator */}
               <motion.div
                 className="relative"
+                // The rings are absolutely positioned, so the container needs its own size
+                style={{ width: '96px', height: '96px' }}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.4, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -281,15 +267,15 @@ export default function LoadingScreen({ isLoading }: LoadingScreenProps) {
                     <motion.div
                       className="h-full bg-gradient-to-r from-[var(--primary)] to-cyan-300"
                       style={{
-                        width: `${progress}%`,
+                        width: `${percent}%`,
                         boxShadow: '0 0 10px rgba(0, 210, 200, 0.5)',
                       }}
                       initial={{ width: "0%" }}
-                      animate={{ width: `${progress}%` }}
+                      animate={{ width: `${percent}%` }}
                       transition={{ duration: 0.3, ease: "easeOut" }}
                     />
                   </div>
-                  <span className="text-[var(--primary)] text-2xl font-[var(--font-title)] font-bold min-w-[3ch]">{Math.round(progress)}%</span>
+                  <span className="text-[var(--primary)] text-2xl font-[var(--font-title)] font-bold min-w-[3ch]">{percent}%</span>
                 </div>
                 
                 {/* Loading text animation */}
