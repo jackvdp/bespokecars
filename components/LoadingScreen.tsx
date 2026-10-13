@@ -1,7 +1,15 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import {
+  animate,
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useMotionValueEvent,
+  useSpring,
+  useTransform,
+} from 'framer-motion'
 
 interface LoadingScreenProps {
   isLoading: boolean
@@ -9,24 +17,77 @@ interface LoadingScreenProps {
   progress: number
 }
 
+// Dial geometry, in SVG units - the dial is drawn in a 400 x 400 box and scales with its container
+const CENTER = 200
+const SWEEP = 270 // degrees covered by the dial, leaving a gap at the bottom
+const START_ANGLE = -SWEEP / 2 // measured clockwise from 12 o'clock
+const RIM_RADIUS = 190
+const TICK_RADIUS = 176
+const LABEL_RADIUS = 140
+const TICK_COUNT = 50
+
+// Rounded so the server and client render identical markup
+const polar = (radius: number, angle: number) => {
+  const radians = (angle * Math.PI) / 180
+  return {
+    x: +(CENTER + radius * Math.sin(radians)).toFixed(2),
+    y: +(CENTER - radius * Math.cos(radians)).toFixed(2),
+  }
+}
+
+const ticks = Array.from({ length: TICK_COUNT + 1 }, (_, i) => {
+  const angle = START_ANGLE + (SWEEP * i) / TICK_COUNT
+  const isMajor = i % 5 === 0
+  return {
+    value: (i * 100) / TICK_COUNT,
+    isMajor,
+    outer: polar(TICK_RADIUS, angle),
+    inner: polar(TICK_RADIUS - (isMajor ? 16 : 8), angle),
+    label: i % 10 === 0 ? polar(LABEL_RADIUS, angle) : null,
+  }
+})
+
+const rimStart = polar(RIM_RADIUS, START_ANGLE)
+const rimEnd = polar(RIM_RADIUS, START_ANGLE + SWEEP)
+const rimPath = `M ${rimStart.x} ${rimStart.y} A ${RIM_RADIUS} ${RIM_RADIUS} 0 1 1 ${rimEnd.x} ${rimEnd.y}`
+
+const REVEAL_TRANSITION = { duration: 1.1, delay: 0.4, ease: [0.65, 0, 0.35, 1] as const }
+
 export default function LoadingScreen({ isLoading, progress }: LoadingScreenProps) {
   const [shouldShow, setShouldShow] = useState(true)
-  const percent = Math.round((isLoading ? progress : 1) * 100)
+  const [percent, setPercent] = useState(0)
 
-  // Dismiss once loading finishes, leaving time for the bar to reach 100%
+  // The dial springs towards the real progress, so it sweeps smoothly between download updates
+  const target = useMotionValue(0)
+  const dial = useSpring(target, { stiffness: 100, damping: 20 })
+
   useEffect(() => {
-    if (isLoading) return
+    target.set(isLoading ? progress : 1)
+  }, [target, isLoading, progress])
 
-    const dismissTimeout = setTimeout(() => {
-      setShouldShow(false)
-    }, 700)
+  useMotionValueEvent(dial, 'change', (value) => {
+    setPercent(Math.min(100, Math.round(value * 100)))
+  })
 
-    return () => clearTimeout(dismissTimeout)
-  }, [isLoading])
+  const isComplete = !isLoading && percent >= 100
+
+  // Reveal the page through a circle opening out from the centre of the dial
+  const reveal = useMotionValue(0)
+
+  useEffect(() => {
+    if (!isComplete) return
+
+    const controls = animate(reveal, 80, {
+      ...REVEAL_TRANSITION,
+      onComplete: () => setShouldShow(false),
+    })
+
+    return () => controls.stop()
+  }, [isComplete, reveal])
 
   // Stop the page being scrolled behind the loader before the video is ready
   useEffect(() => {
-    if (!shouldShow) return
+    if (isComplete) return
 
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -34,280 +95,287 @@ export default function LoadingScreen({ isLoading, progress }: LoadingScreenProp
     return () => {
       document.body.style.overflow = previousOverflow
     }
-  }, [shouldShow])
+  }, [isComplete])
+
+  // No mask until the reveal starts - Safari draws a radial gradient whose stops all sit at
+  // zero as fully transparent, which would hide the whole loader
+  const revealMask = useTransform(reveal, (radius) =>
+    radius > 0
+      ? `radial-gradient(circle at 50% 50%, transparent ${radius}vmax, #000 calc(${radius}vmax + 2px))`
+      : 'none'
+  )
+  // A bright neon line on the edge of the opening, with a soft glow behind it
+  const revealEdge = useMotionTemplate`radial-gradient(circle at 50% 50%, transparent ${reveal}vmax, rgba(255, 255, 255, 0.9) calc(${reveal}vmax + 2px), rgba(0, 210, 200, 0.9) calc(${reveal}vmax + 5px), rgba(0, 210, 200, 0.25) calc(${reveal}vmax + 16px), rgba(0, 210, 200, 0) calc(${reveal}vmax + 92px))`
+  const revealEdgeOpacity = useTransform(reveal, [0, 4, 55, 80], [0, 1, 1, 0])
+
+  const headAngle = useTransform(dial, (value) => START_ANGLE + SWEEP * value)
+  const glowOpacity = useTransform(dial, [0, 1], [0.35, 1])
+
+  if (!shouldShow) return null
 
   return (
-    <AnimatePresence>
-      {shouldShow && (
-        <motion.div
-          className="fixed inset-0 overflow-hidden"
-          style={{ backgroundColor: '#000000', zIndex: 99999, isolation: 'isolate' }}
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.05 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+    <motion.div
+      role="progressbar"
+      aria-label="Loading"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={percent}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 99999,
+        overflow: 'hidden',
+        backgroundColor: '#000000',
+        pointerEvents: isComplete ? 'none' : 'auto',
+        maskImage: revealMask,
+        WebkitMaskImage: revealMask,
+      }}
+    >
+      {/* Grid pattern - fades out away from the dial */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px)`,
+          backgroundSize: '60px 60px',
+          backgroundPosition: 'center',
+          maskImage: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0.8) 0%, transparent 60%)',
+          WebkitMaskImage: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0.8) 0%, transparent 60%)',
+        }}
+      />
+
+      {/* Glow behind the dial - brightens as the download progresses */}
+      <motion.div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'radial-gradient(circle at 50% 50%, rgba(0, 210, 200, 0.16) 0%, transparent 45%)',
+          opacity: glowOpacity,
+        }}
+      />
+
+      {/* Dial - centred on the screen so the reveal opens from its middle */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          width: 'min(420px, 80vw, 50vh)',
+          aspectRatio: '1',
+          transform: 'translate(-50%, -50%)',
+        }}
+      >
+        {/* Wordmark */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            marginBottom: 'clamp(28px, 6vh, 56px)',
+            // Balances the trailing letter-spacing so the text sits on centre
+            paddingLeft: '0.35em',
+            whiteSpace: 'nowrap',
+            color: 'var(--foreground)',
+            fontFamily: 'var(--font-title)',
+            fontSize: 'clamp(16px, 4.5vw, 26px)',
+            fontWeight: 600,
+            letterSpacing: '0.35em',
+            textTransform: 'uppercase',
+          }}
         >
-          {/* Solid black base layer - ensures no transparency */}
-          <div className="absolute inset-0" style={{ backgroundColor: '#000000' }} />
+          Bespoke{' '}
+          <span style={{ color: 'var(--primary)', textShadow: '0 0 20px var(--primary)' }}>Cars</span>
+        </div>
 
-          {/* Animated gradient background */}
-          <div className="absolute inset-0" style={{ backgroundColor: '#000000' }}>
-            <motion.div
-              className="absolute inset-0"
+        <motion.div
+          style={{ position: 'absolute', inset: 0 }}
+          animate={{ scale: isComplete ? 1.3 : 1 }}
+          transition={REVEAL_TRANSITION}
+        >
+          <svg viewBox="0 0 400 400" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+            {/* Bezel - turns slowly so the dial never looks frozen on a slow connection */}
+            <motion.circle
+              cx={CENTER}
+              cy={CENTER}
+              r={RIM_RADIUS + 14}
+              fill="none"
+              strokeWidth={1.5}
+              strokeDasharray="1 13"
+              strokeLinecap="round"
+              style={{ stroke: 'rgba(255, 255, 255, 0.3)' }}
+              animate={{ rotate: 360 }}
+              transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
+            />
+
+            {/* Rim */}
+            <path d={rimPath} fill="none" strokeWidth={1.5} style={{ stroke: 'rgba(255, 255, 255, 0.1)' }} />
+            <motion.path
+              d={rimPath}
+              fill="none"
+              strokeWidth={2.5}
+              strokeLinecap="round"
               style={{
-                background: 'radial-gradient(circle at 20% 50%, rgba(0, 210, 200, 0.15) 100%, transparent 100%)',
-              }}
-              animate={{
-                scale: [1, 1.2, 1],
-                x: [0, 50, 0],
-                y: [0, -30, 0],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut"
+                pathLength: dial,
+                stroke: 'var(--primary)',
+                filter: 'drop-shadow(0 0 6px var(--primary))',
               }}
             />
-            <motion.div
-              className="absolute inset-0"
+
+            {/* Tick marks */}
+            {ticks.map((tick) => (
+              <line
+                key={tick.value}
+                x1={tick.inner.x}
+                y1={tick.inner.y}
+                x2={tick.outer.x}
+                y2={tick.outer.y}
+                strokeWidth={tick.isMajor ? 2 : 1.5}
+                strokeLinecap="round"
+                style={{ stroke: 'rgba(255, 255, 255, 0.18)' }}
+              />
+            ))}
+
+            {/* Tick marks light up as the download passes them */}
+            <g style={{ filter: 'drop-shadow(0 0 5px var(--primary))' }}>
+              {ticks.map((tick) => (
+                <line
+                  key={tick.value}
+                  x1={tick.inner.x}
+                  y1={tick.inner.y}
+                  x2={tick.outer.x}
+                  y2={tick.outer.y}
+                  strokeWidth={tick.isMajor ? 2 : 1.5}
+                  strokeLinecap="round"
+                  style={{
+                    stroke: 'var(--primary)',
+                    opacity: tick.value <= percent ? 1 : 0,
+                    transition: 'opacity 0.3s ease-out',
+                  }}
+                />
+              ))}
+            </g>
+
+            {/* Scale */}
+            {ticks.map((tick) => tick.label && (
+              <text
+                key={tick.value}
+                x={tick.label.x}
+                y={tick.label.y}
+                dy={4}
+                textAnchor="middle"
+                style={{
+                  fill: tick.value <= percent ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.3)',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  transition: 'fill 0.3s ease-out',
+                }}
+              >
+                {tick.value}
+              </text>
+            ))}
+
+            {/* Readout */}
+            <text
+              x={CENTER}
+              y={232}
+              textAnchor="middle"
               style={{
-                background: 'radial-gradient(circle at 80% 50%, rgba(0, 210, 200, 0.1) 0%, transparent 50%)',
+                fill: 'var(--foreground)',
+                fontFamily: 'var(--font-title)',
+                fontSize: '92px',
+                fontWeight: 600,
+                letterSpacing: '-0.02em',
               }}
-              animate={{
-                scale: [1.2, 1, 1.2],
-                x: [0, -50, 0],
-                y: [0, 30, 0],
+            >
+              {percent}
+            </text>
+            <text
+              x={CENTER}
+              y={266}
+              textAnchor="middle"
+              style={{
+                fill: 'rgba(255, 255, 255, 0.4)',
+                fontFamily: 'var(--font-body)',
+                fontSize: '12px',
+                fontWeight: 500,
+                letterSpacing: '0.2em',
               }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 0.5
+            >
+              PERCENT
+            </text>
+
+            {/* Status - sits in the gap at the bottom of the dial */}
+            <text
+              x={CENTER}
+              y={352}
+              textAnchor="middle"
+              style={{
+                fill: 'var(--primary)',
+                fontFamily: 'var(--font-body)',
+                fontSize: '13px',
+                fontWeight: 500,
+                letterSpacing: '0.3em',
+              }}
+            >
+              {isComplete ? 'READY' : 'LOADING'}
+            </text>
+          </svg>
+
+          {/* Head of the rim - rides round the dial with the progress */}
+          <motion.div style={{ position: 'absolute', inset: 0, rotate: headAngle }}>
+            <div
+              style={{
+                position: 'absolute',
+                top: `${((CENTER - RIM_RADIUS) / 400) * 100}%`,
+                left: '50%',
+                width: '8px',
+                height: '8px',
+                margin: '-4px 0 0 -4px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--foreground)',
+                boxShadow: '0 0 12px 3px var(--primary), 0 0 30px 8px rgba(0, 210, 200, 0.4)',
               }}
             />
-            <motion.div
-              className="absolute inset-0"
-              style={{
-                background: 'radial-gradient(circle at 50% 50%, rgba(0, 210, 200, 0.05) 0%, transparent 70%)',
-              }}
-              animate={{
-                scale: [0.8, 1.5, 0.8],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-          </div>
-
-          {/* Grid pattern overlay */}
-          <div 
-            className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage: `linear-gradient(rgba(0, 210, 200, 0.3) 1px, transparent 1px),
-                               linear-gradient(90deg, rgba(0, 210, 200, 0.3) 1px, transparent 1px)`,
-              backgroundSize: '50px 50px',
-              maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 70%)'
-            }}
-          />
-
-          {/* Content */}
-          <div className="relative h-full flex items-center justify-center">
-            <div className="flex flex-col items-center gap-12 px-8">
-              
-              {/* Animated logo */}
-              <motion.div className="relative">
-                <motion.div
-                  className="absolute -inset-20 rounded-full"
-                  style={{
-                    background: 'radial-gradient(circle, rgba(0, 210, 200, 0.3) 0%, transparent 70%)',
-                    filter: 'blur(40px)',
-                  }}
-                  animate={{
-                    scale: [1, 1.3, 1],
-                    opacity: [0.5, 0.8, 0.5],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-                <motion.div
-                  className="text-5xl md:text-7xl lg:text-8xl font-[var(--font-title)] font-bold tracking-tight text-white relative"
-                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                  animate={{ 
-                    opacity: 1, 
-                    y: 0, 
-                    scale: 1,
-                  }}
-                  transition={{ delay: 0.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                  style={{
-                    textShadow: '0 0 80px rgba(0, 210, 200, 0.5)',
-                  }}
-                >
-                  <motion.span
-                    animate={{
-                      textShadow: [
-                        '0 0 80px rgba(0, 210, 200, 0.5)',
-                        '0 0 120px rgba(0, 210, 200, 0.8)',
-                        '0 0 80px rgba(0, 210, 200, 0.5)',
-                      ]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  >
-                    BESPOKE
-                  </motion.span>
-                  {' '}
-                  <motion.span
-                    className="text-[var(--primary)]"
-                    animate={{
-                      textShadow: [
-                        '0 0 40px rgba(0, 210, 200, 0.8)',
-                        '0 0 60px rgba(0, 210, 200, 1)',
-                        '0 0 40px rgba(0, 210, 200, 0.8)',
-                      ]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: 0.3
-                    }}
-                  >
-                    CARS
-                  </motion.span>
-                </motion.div>
-              </motion.div>
-              
-              {/* Animated tagline */}
-              <motion.div
-                className="text-sm md:text-base font-[var(--font-body)] tracking-[0.3em] uppercase text-[var(--primary)] text-center max-w-2xl"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <motion.span
-                  animate={{
-                    opacity: [0.6, 1, 0.6],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  Where Luxury Meets Your Most Important Moments
-                </motion.span>
-              </motion.div>
-              
-              {/* Dynamic loading indicator */}
-              <motion.div
-                className="relative"
-                // The rings are absolutely positioned, so the container needs its own size
-                style={{ width: '96px', height: '96px' }}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              >
-                {/* Outer spinning ring */}
-                <motion.div 
-                  className="w-24 h-24 border-2 border-white/10 rounded-full absolute inset-0"
-                  animate={{ rotate: -360 }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                />
-                
-                {/* Middle spinning ring */}
-                <motion.div 
-                  className="w-20 h-20 border-2 border-[var(--primary)]/30 rounded-full absolute top-2 left-2"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                />
-                
-                {/* Inner pulsing circle */}
-                <motion.div 
-                  className="w-16 h-16 rounded-full absolute top-4 left-4"
-                  style={{
-                    background: 'radial-gradient(circle, rgba(0, 210, 200, 0.4) 0%, transparent 70%)',
-                  }}
-                  animate={{ 
-                    scale: [1, 1.2, 1],
-                    opacity: [0.4, 0.8, 0.4],
-                  }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                />
-                
-                {/* Center dot */}
-                <motion.div 
-                  className="w-3 h-3 bg-[var(--primary)] rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-                  style={{
-                    boxShadow: '0 0 20px rgba(0, 210, 200, 0.8)',
-                  }}
-                  animate={{ 
-                    scale: [1, 1.5, 1],
-                  }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
-                />
-              </motion.div>
-              
-              {/* Progress indicator */}
-              <motion.div
-                className="flex flex-col items-center gap-3 w-full max-w-sm"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5, duration: 0.6 }}
-              >
-                <div className="flex items-center gap-4 w-full">
-                  <span className="text-white/40 text-xs font-[var(--font-body)] uppercase tracking-wider">Loading</span>
-                  <div className="flex-1 h-0.5 bg-white/10 rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full bg-gradient-to-r from-[var(--primary)] to-cyan-300"
-                      style={{
-                        width: `${percent}%`,
-                        boxShadow: '0 0 10px rgba(0, 210, 200, 0.5)',
-                      }}
-                      initial={{ width: "0%" }}
-                      animate={{ width: `${percent}%` }}
-                      transition={{ duration: 0.3, ease: "easeOut" }}
-                    />
-                  </div>
-                  <span className="text-[var(--primary)] text-2xl font-[var(--font-title)] font-bold min-w-[3ch]">{percent}%</span>
-                </div>
-                
-                {/* Loading text animation */}
-                <motion.div
-                  className="text-white/30 text-xs tracking-[0.2em] uppercase"
-                  animate={{
-                    opacity: [0.3, 0.6, 0.3],
-                  }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  Preparing your luxury experience
-                </motion.div>
-              </motion.div>
-            </div>
-          </div>
-
-          {/* Bottom accent line */}
-          <motion.div
-            className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[var(--primary)] to-transparent"
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ delay: 0.6, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            style={{
-              boxShadow: '0 0 20px rgba(0, 210, 200, 0.5)',
-            }}
-          />
+          </motion.div>
         </motion.div>
-      )}
-    </AnimatePresence>
+
+        {/* Tagline */}
+        <p
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 'min(560px, 86vw)',
+            marginTop: 'clamp(24px, 5vh, 48px)',
+            paddingLeft: '0.3em',
+            textAlign: 'center',
+            color: 'rgba(255, 255, 255, 0.4)',
+            fontFamily: 'var(--font-body)',
+            fontSize: '11px',
+            fontWeight: 500,
+            letterSpacing: '0.3em',
+            lineHeight: 1.8,
+            textTransform: 'uppercase',
+          }}
+        >
+          Where Luxury Meets Your Most Important Moments
+        </p>
+      </div>
+
+      {/* Glowing edge of the reveal */}
+      <motion.div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: revealEdge,
+          opacity: revealEdgeOpacity,
+          pointerEvents: 'none',
+        }}
+      />
+    </motion.div>
   )
 }
