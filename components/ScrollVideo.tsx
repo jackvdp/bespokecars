@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { usePreloadedVideo } from '@/hooks/usePreloadedVideo'
 
 export interface TextOverlay {
   text: string
@@ -18,7 +19,7 @@ interface ScrollVideoProps {
   overlayGradient?: boolean
   customOverlay?: (activeIndex: number, progress: number) => React.ReactNode
   contentFadeIn?: number
-  priority?: boolean
+  onLoadProgress?: (progress: number) => void
   onLoadComplete?: () => void
 }
 
@@ -30,63 +31,27 @@ export default function ScrollVideo({
   overlayGradient = true,
   customOverlay,
   contentFadeIn = 0,
-  priority = false,
+  onLoadProgress,
   onLoadComplete
 }: ScrollVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isLoaded, setIsLoaded] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const [contentProgress, setContentProgress] = useState(0)
   const [showIndicator, setShowIndicator] = useState(true)
   const [isInView, setIsInView] = useState(true)
   const [isFullFrame, setIsFullFrame] = useState(true)
   
-  const videoDurationRef = useRef(8)
-  
+  // The video is downloaded in full before it's considered loaded, so scrubbing never waits on the network
+  const { videoSrc, progress: loadProgress, isReady: isLoaded, scrubTo } = usePreloadedVideo(videoRef, src)
+
   useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
+    onLoadProgress?.(loadProgress)
+  }, [loadProgress, onLoadProgress])
 
-    const handleLoadedMetadata = () => {
-      videoDurationRef.current = video.duration
-      setIsLoaded(true)
-      video.pause()
-      video.currentTime = 0
-      onLoadComplete?.()
-    }
-
-    // Also listen for canplay as fallback for mobile
-    const handleCanPlay = () => {
-      if (!isLoaded) {
-        handleLoadedMetadata()
-      }
-    }
-
-    video.addEventListener('loadedmetadata', handleLoadedMetadata)
-    video.addEventListener('canplay', handleCanPlay)
-
-    if (video.readyState >= 2) {
-      handleLoadedMetadata()
-    } else {
-      // Force load on mobile - browsers ignore preload="auto"
-      video.load()
-
-      // Attempt to play (muted videos can autoplay on mobile)
-      // This triggers the browser to actually load the video
-      video.play().then(() => {
-        video.pause()
-        video.currentTime = 0
-      }).catch(() => {
-        // Play failed, but load() should still work
-      })
-    }
-
-    return () => {
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata)
-      video.removeEventListener('canplay', handleCanPlay)
-    }
-  }, [onLoadComplete, isLoaded])
+  useEffect(() => {
+    if (isLoaded) onLoadComplete?.()
+  }, [isLoaded, onLoadComplete])
 
   const getActiveOverlayIndex = useCallback((progress: number) => {
     for (let i = textOverlays.length - 1; i >= 0; i--) {
@@ -107,9 +72,8 @@ export default function ScrollVideo({
     let rafId: number
 
     const updateVideoFrame = () => {
-      const video = videoRef.current
       const container = containerRef.current
-      if (!video || !container) return
+      if (!container) return
 
       const rect = container.getBoundingClientRect()
       const containerHeight = container.offsetHeight
@@ -125,16 +89,11 @@ export default function ScrollVideo({
       // Check if any part is in view
       const isCurrentlyInView = rect.bottom > 0 && rect.top < viewportHeight
       
-      if (isCurrentlyInView !== isInView) {
-        setIsInView(isCurrentlyInView)
-      }
+      setIsInView(isCurrentlyInView)
       
       // Update video time based on video progress
       if (isCurrentlyInView) {
-        const targetTime = videoProgress * videoDurationRef.current
-        if (!isNaN(targetTime) && isFinite(targetTime)) {
-          video.currentTime = targetTime
-        }
+        scrubTo(videoProgress)
       }
       
       // CONTENT TIMELINE: only when video is 100% in frame
@@ -147,25 +106,15 @@ export default function ScrollVideo({
       // Full frame = top of container is at or below top of viewport AND bottom is at or above bottom of viewport
       const isCurrentlyFullFrame = rect.top <= 0 && rect.bottom >= viewportHeight
       
-      if (isCurrentlyFullFrame !== isFullFrame) {
-        setIsFullFrame(isCurrentlyFullFrame)
-      }
+      setIsFullFrame(isCurrentlyFullFrame)
       
-      if (Math.abs(newContentProgress - contentProgress) > 0.005) {
-        setContentProgress(newContentProgress)
-      }
+      setContentProgress(prev => Math.abs(newContentProgress - prev) > 0.005 ? newContentProgress : prev)
 
       // Update active overlay based on content progress
-      const newIndex = getActiveOverlayIndex(newContentProgress)
-      if (newIndex !== activeIndex) {
-        setActiveIndex(newIndex)
-      }
+      setActiveIndex(getActiveOverlayIndex(newContentProgress))
 
       // Update scroll indicator visibility
-      const shouldShowIndicator = newContentProgress < 0.05
-      if (shouldShowIndicator !== showIndicator) {
-        setShowIndicator(shouldShowIndicator)
-      }
+      setShowIndicator(newContentProgress < 0.05)
     }
 
     const handleScroll = () => {
@@ -180,7 +129,7 @@ export default function ScrollVideo({
       window.removeEventListener('scroll', handleScroll)
       cancelAnimationFrame(rafId)
     }
-  }, [isLoaded, activeIndex, showIndicator, isInView, isFullFrame, contentProgress, getActiveOverlayIndex])
+  }, [isLoaded, getActiveOverlayIndex, scrubTo])
 
   // Content opacity: fade in based on contentFadeIn prop, fade out as we approach end
   const fadeInOpacity = contentFadeIn > 0 && contentProgress < contentFadeIn
@@ -219,8 +168,8 @@ export default function ScrollVideo({
             className="h-full w-full object-cover"
             muted
             playsInline
-            preload={priority ? "auto" : "metadata"}
-            src={src}
+            preload="auto"
+            src={videoSrc ?? undefined}
           >
             Your browser does not support the video tag.
           </video>

@@ -43,17 +43,11 @@ const heroOverlays: TextOverlay[] = [
 ];
 
 export default function HomeContent({ cars }: HomeContentProps) {
+  const [firstVideoProgress, setFirstVideoProgress] = useState(0);
   const [isFirstVideoLoaded, setIsFirstVideoLoaded] = useState(false);
-  const [isSecondVideoStarted, setIsSecondVideoStarted] = useState(false);
 
   const handleFirstVideoLoad = useCallback(() => {
     setIsFirstVideoLoaded(true);
-    // Start loading second video immediately after first is ready
-    setIsSecondVideoStarted(true);
-  }, []);
-
-  const handleSecondVideoStart = useCallback(() => {
-    console.log('Second video started loading');
   }, []);
 
   return (
@@ -63,15 +57,15 @@ export default function HomeContent({ cars }: HomeContentProps) {
         src="/videos/cars-optimised.mp4"
         textOverlays={heroOverlays}
         scrollHeight="750vh"
-        priority={true}
+        onLoadProgress={setFirstVideoProgress}
         onLoadComplete={handleFirstVideoLoad}
       />
       <HowItWorks />
       <ScrollVideoSimple
         src="/videos/lambo-optimised.mp4"
         scrollHeight="750vh"
-        lazy={!isSecondVideoStarted}
-        onLoadStart={handleSecondVideoStart}
+        // Starts downloading once the first video is fully downloaded, so the two don't compete
+        enabled={isFirstVideoLoaded}
       >
         {(scrollYProgress) => (
           <ServicesScrollContent scrollYProgress={scrollYProgress} />
@@ -79,7 +73,7 @@ export default function HomeContent({ cars }: HomeContentProps) {
       </ScrollVideoSimple>
       <FleetContactSection cars={cars} />
       <Footer />
-      <LoadingScreen isLoading={!isFirstVideoLoaded} />
+      <LoadingScreen isLoading={!isFirstVideoLoaded} progress={firstVideoProgress} />
     </main>
   );
 }
