@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Bespoke Cars: the loading-screen dial around a B. The B is Outfit drawn as a path, because a
+       favicon cannot load web fonts. Laid out on half pixels of a 16px tab icon - keep it on that grid. -->
+  <circle cx="16" cy="16" r="16" fill="#000"/>
+  <path d="M6.45 25.55A13.5 13.5 0 1 1 25.55 25.55" fill="none" stroke="#00f4f6" stroke-width="3"/>
+  <path d="M10 25V7H17.78Q19.54 7 20.75 7.65Q21.97 8.3 22.6 9.36Q23.22 10.4 23.22 11.64Q23.22 13.21 22.21 14.32Q21.72 14.87 21.03 15.26Q22.01 15.75 22.68 16.51Q23.86 17.85 23.86 19.77Q23.86 21.26 23.14 22.44Q22.42 23.62 21.06 24.31Q19.71 25 17.8 25ZM14 22H17.52Q18.72 22 19.4 21.27Q20.08 20.54 20.08 19.5Q20.08 18.8 19.77 18.23Q19.46 17.65 18.89 17.33Q18.32 17 17.52 17H14ZM14 14H17.17Q18.18 14 18.81 13.5Q19.44 13 19.44 12Q19.44 11 18.81 10.5Q18.18 10 17.17 10H14Z" fill="#fff"/>
+</svg>
